@@ -1,11 +1,11 @@
 'use client';
 
 const navItems = [
-  { label: "Home", href: "#hero" },
-  { label: "About", href: "#about" },
-  { label: "Projects", href: "#projects" },
-  { label: "Stack", href: "#stack" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Projects", href: "/projects" },
+  { label: "TechStack", href: "/techstack" },
+  { label: "Contacts", href: "/contacts" },
 ];
 
 export default function Navbar() {
