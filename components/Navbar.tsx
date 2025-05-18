@@ -26,4 +26,3 @@ export default function Navbar() {
     </header>
   );
 }
-asdasdadsad
