@@ -1,8 +1,8 @@
-import Hero from "@/components/Hero";
-import About from '@/about/About'
-import Projects from '@/projects/Projects'
-import TechStack from '@/techstack/TechStack'
-import Contact from '@/contacts/Contacts'
+import Hero from "@/app/components/Hero";
+import About from '@/app/about/About'
+import Projects from '@/app/projects/Projects'
+import TechStack from '@/app/techstack/TechStack'
+import Contact from '@/app/contacts/Contacts'
 
 export default function Home() {
   return (
