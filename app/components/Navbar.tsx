@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -16,9 +17,9 @@ export default function Navbar() {
         <ul className="flex gap-6 text-sm sm:text-base">
           {navItems.map((item, idx) => (
             <li key={idx}>
-              <a href={item.href} className="hover:text-purple-400 transition">
+              <Link href={item.href} className="hover:text-purple-400 transition">
                 {item.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
