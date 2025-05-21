@@ -12,8 +12,8 @@ export default function Home() {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const fadeTimer = setTimeout(() => setFadeOut(true), 2500); // Start fade after 2.5s
-    const hideTimer = setTimeout(() => setShowHero(false), 3000); // Hide after 3s
+    const fadeTimer = setTimeout(() => setFadeOut(true), 4500); // Start fade after 2.5s
+    const hideTimer = setTimeout(() => setShowHero(false), 5000); // Hide after 3s
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(hideTimer);
@@ -35,6 +35,9 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center w-full">
       <About />
+      <Projects />
+      <TechStack />
+      <Contact />
     </main>
   );
 }
