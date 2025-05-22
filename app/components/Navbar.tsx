@@ -1,9 +1,12 @@
-'use client';
-import Link from 'next/link';
+"use client";
+import Link from "next/link";
 
 const navItems = [
-  { label: "About", href: "/about"},
+  { label: "Home", href: "/about" },
+  { label: "About", href: "/about" },
+  { label: "Experience", href: "/about" },
   { label: "Projects", href: "/projects" },
+  { label: "Services", href: "/about" },
   { label: "TechStack", href: "/techstack" },
   { label: "Contacts", href: "/contacts" },
 ];
@@ -14,7 +17,7 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center text-zinc-200">
         <h1
           className="text-purple-400 text-3xl font-extrabold tracking-wide animate-breathing-glow drop-shadow-lg"
-          style={{ fontFamily: 'Fira Mono, monospace' }}
+          style={{ fontFamily: "Fira Mono, monospace" }}
         >
           LuC1f3-r
         </h1>
@@ -40,18 +43,13 @@ export default function Navbar() {
       </nav>
       <style jsx global>{`
         @keyframes breathing-glow {
-          0%, 100% {
-            text-shadow:
-              0 0 8px #a855f7,
-              0 0 16px #a855f7,
-              0 0 24px #a855f7;
+          0%,
+          100% {
+            text-shadow: 0 0 8px #a855f7, 0 0 16px #a855f7, 0 0 24px #a855f7;
             color: #a855f7;
           }
           50% {
-            text-shadow:
-              0 0 24px #a855f7,
-              0 0 48px #a855f7,
-              0 0 64px #a855f7;
+            text-shadow: 0 0 24px #a855f7, 0 0 48px #a855f7, 0 0 64px #a855f7;
             color: #c084fc;
           }
         }

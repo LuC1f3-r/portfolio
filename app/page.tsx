@@ -1,12 +1,13 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
 import Hero from "@/app/components/Hero";
-import About from '@/app/about/page'
-import Projects from '@/app/projects/page'
-import TechStack from '@/app/techstack/page'
-import Contact from '@/app/contacts/page'
+import About from "@/app/about/page";
+import Experience from "./experience/page";
+import Projects from "@/app/projects/page";
 import Services from "@/app/services/page";
+import TechStack from "@/app/techstack/page";
+import Contact from "@/app/contacts/page";
 
 export default function Home() {
   const [showHero, setShowHero] = useState(true);
@@ -21,22 +22,24 @@ export default function Home() {
     };
   }, []);
 
-  if (showHero) {
-    return (
-      <main
-        className={`flex items-center justify-center w-full h-screen transition-opacity duration-500 ${
-          fadeOut ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        <Hero />
-      </main>
-    );
-  }
+  // if (showHero) {
+  //   return (
+  //     <main
+  //       className={`flex items-center justify-center w-full h-screen transition-opacity duration-500 ${
+  //         fadeOut ? "opacity-0" : "opacity-100"
+  //       }`}
+  //     >
+  //       <Hero />
+  //     </main>
+  //   );
+  // }
 
   return (
     <main className="flex flex-col items-center justify-center w-full">
+      <Hero />
       <About />
       <Services />
+      <Experience />
     </main>
   );
 }
