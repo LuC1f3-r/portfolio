@@ -1,9 +1,10 @@
+'use client'
+
 import { FaEnvelope, FaLinkedin, FaGithub } from "react-icons/fa";
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-zinc-900 relative overflow-hidden text-zinc-100">
-      {/* Animated background blobs */}
+<main className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-zinc-900 relative overflow-hidden text-zinc-100">      {/* Animated background blobs */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
         <div className="absolute w-72 h-72 bg-purple-700 opacity-30 rounded-full mix-blend-multiply filter blur-2xl animate-pulse left-[-6rem] top-[-6rem]" />
         <div className="absolute w-96 h-96 bg-pink-500 opacity-20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse right-[-8rem] bottom-[-8rem]" />

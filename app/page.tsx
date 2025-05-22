@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Hero from "@/app/components/Hero";
-import About from '@/app/about/About'
-import Projects from '@/app/projects/Projects'
-import TechStack from '@/app/techstack/TechStack'
-import Contact from '@/app/contacts/Contacts'
+import About from '@/app/about/page'
+import Projects from '@/app/projects/page'
+import TechStack from '@/app/techstack/page'
+import Contact from '@/app/contacts/page'
+import Services from "@/app/services/page";
 
 export default function Home() {
   const [showHero, setShowHero] = useState(true);
@@ -35,9 +36,7 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center w-full">
       <About />
-      <Projects />
-      <TechStack />
-      <Contact />
+      <Services />
     </main>
   );
 }

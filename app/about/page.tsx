@@ -1,3 +1,5 @@
+'use client'
+
 export default function About() {
   return (
     <section className="w-screen min-h-screen pt-16 flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-800 text-zinc-100">
