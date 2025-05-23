@@ -1,38 +1,49 @@
 "use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { FaBars, FaTimes, FaTwitter, FaLinkedin, FaGithub } from "react-icons/fa";
 
 const navItems = [
-  { label: "Home", href: "/about" },
+  { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Experience", href: "/about" },
+  { label: "Experience", href: "/experience" },
   { label: "Projects", href: "/projects" },
-  { label: "Services", href: "/about" },
+  { label: "Services", href: "/services" },
   { label: "TechStack", href: "/techstack" },
   { label: "Contacts", href: "/contacts" },
 ];
 
+const socialLinks = [
+  { icon: <FaTwitter />, href: "https://twitter.com/", label: "Twitter" },
+  { icon: <FaLinkedin />, href: "https://linkedin.com/", label: "LinkedIn" },
+  { icon: <FaGithub />, href: "https://github.com/", label: "GitHub" },
+];
+
 export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-black/30 backdrop-blur-lg border-b border-zinc-800 shadow-lg">
-      <nav className="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center text-zinc-200">
+      <nav className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-zinc-200">
         <h1
-          className="text-purple-400 text-3xl font-extrabold tracking-wide animate-breathing-glow drop-shadow-lg"
+          className="text-purple-400 text-xl font-extrabold tracking-wide animate-breathing-glow drop-shadow-lg"
           style={{ fontFamily: "Fira Mono, monospace" }}
         >
           LuC1f3-r
         </h1>
-        <ul className="flex gap-8 text-base sm:text-lg">
+        <ul className="hidden md:flex gap-2 text-xs sm:text-sm">
           {navItems.map((item, idx) => (
             <li key={idx}>
               <Link
                 href={item.href}
-                className="relative px-4 py-2 rounded-md transition-all duration-200
-                  hover:bg-purple-900/30 hover:text-purple-400
-                  active:scale-95 active:bg-purple-800/60
-                  focus:outline-none focus:ring-2 focus:ring-purple-500
-                  before:absolute before:inset-0 before:rounded-md before:opacity-0
-                  before:transition-all before:duration-300
-                  hover:before:opacity-100 hover:before:shadow-[0_0_16px_4px_rgba(168,85,247,0.3)]"
+                className="relative px-3 py-1 rounded-md transition-all duration-200
+                          hover:bg-purple-900/30 hover:text-purple-400
+                          active:scale-95 active:bg-purple-800/60
+                          focus:outline-none focus:ring-2 focus:ring-purple-500
+                          before:absolute before:inset-0 before:rounded-md before:opacity-0
+                          before:transition-all before:duration-300
+                          hover:before:opacity-100 hover:before:shadow-[0_0_16px_4px_rgba(168,85,247,0.3)]"
                 style={{ zIndex: 1 }}
               >
                 {item.label}
@@ -40,6 +51,58 @@ export default function Navbar() {
             </li>
           ))}
         </ul>
+        {/* Menu Button */}
+        <button
+          className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Open menu"
+        >
+          {menuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+        </button>
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div className="fixed inset-0 bg-black/70 z-50 flex flex-col items-end">
+            <div className="w-2/3 max-w-xs bg-zinc-900 h-full p-6 flex flex-col gap-6 shadow-lg">
+              <button
+                className="self-end mb-4 p-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <FaTimes size={22} />
+              </button>
+              <ul className="flex flex-col gap-4 text-base">
+                {navItems.map((item, idx) => (
+                  <li key={idx}>
+                    <Link
+                      href={item.href}
+                      className="block px-3 py-2 rounded-md transition-all duration-200
+                                hover:bg-purple-900/30 hover:text-purple-400
+                                active:scale-95 active:bg-purple-800/60
+                                focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex gap-4 mt-auto">
+                {socialLinks.map((item, idx) => (
+                  <a
+                    key={idx}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-zinc-200 hover:text-purple-400 text-2xl transition"
+                    aria-label={item.label}
+                  >
+                    {item.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
       <style jsx global>{`
         @keyframes breathing-glow {

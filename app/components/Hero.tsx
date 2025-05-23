@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FaInstagram, FaLinkedin, FaEnvelope, FaTwitter } from "react-icons/fa";
+import {
+  FaInstagram,
+  FaLinkedin,
+  FaEnvelope,
+  FaTwitter,
+  FaGithub,
+} from "react-icons/fa";
 
 const roles = [
   "Backend Developer",
@@ -47,7 +53,7 @@ export default function Hero() {
   }, [typingIndex, isDeleting, roleIndex]);
 
   return (
-    <section className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-black via-zinc-900 to-gray-900 p-6 sm:p-12">
+    <section className="h-screen w-full flex items-stretch justify-center bg-gradient-to-br from-black via-zinc-900 to-gray-900 p-6 sm:p-12">
       <style>{`
         .glow {
           text-shadow:
@@ -115,6 +121,12 @@ export default function Hero() {
               className="text-purple-400 hover:text-red-400 transition"
             >
               <FaEnvelope />
+            </a>
+            <a
+              href=""
+              className="text-purple-400 hover:text-red-400 transition"
+            >
+              <FaGithub />
             </a>
           </div>
 

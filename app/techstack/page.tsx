@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   SiJavascript,
   SiTypescript,
@@ -44,7 +44,20 @@ const tech = [
 ];
 
 const StarsBackground = () => {
-  const stars = Array.from({ length: 80 });
+  const [stars, setStars] = React.useState<
+    { size: number; left: number; top: number; duration: number }[]
+  >([]);
+
+  useEffect(() => {
+    setStars(
+      Array.from({ length: 80 }).map(() => ({
+        size: Math.random() * 2 + 1,
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        duration: Math.random() * 3 + 2,
+      }))
+    );
+  }, []);
 
   useEffect(() => {
     const styleEl = document.createElement("style");
@@ -72,27 +85,21 @@ const StarsBackground = () => {
         className="absolute inset-0 animate-backgroundMove"
         style={{ animation: "backgroundMove 60s infinite linear" }}
       >
-        {stars.map((_, i) => {
-          const size = Math.random() * 2 + 1;
-          const left = Math.random() * 100;
-          const top = Math.random() * 100;
-          const duration = Math.random() * 3 + 2;
-          return (
-            <div
-              key={i}
-              className="bg-white rounded-full"
-              style={{
-                position: "absolute",
-                width: `${size}px`,
-                height: `${size}px`,
-                left: `${left}%`,
-                top: `${top}%`,
-                animation: `twinkle ${duration}s infinite ease-in-out`,
-                filter: "drop-shadow(0 0 6px #fff)",
-              }}
-            />
-          );
-        })}
+        {stars.map((star, i) => (
+          <div
+            key={i}
+            className="bg-white rounded-full"
+            style={{
+              position: "absolute",
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              left: `${star.left}%`,
+              top: `${star.top}%`,
+              animation: `twinkle ${star.duration}s infinite ease-in-out`,
+              filter: "drop-shadow(0 0 6px #fff)",
+            }}
+          />
+        ))}
       </div>
     </div>
   );
