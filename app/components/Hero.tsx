@@ -53,7 +53,7 @@ export default function Hero() {
   }, [typingIndex, isDeleting, roleIndex]);
 
   return (
-    <section className="h-screen w-full flex items-stretch justify-center bg-gradient-to-br from-black via-zinc-900 to-gray-900 p-6 sm:p-12">
+    <section className="min-h-screen pt-0 w-full flex items-center justify-center bg-gradient-to-br from-black via-zinc-900 to-gray-900 p-6 sm:p-12">
       <style>{`
         .glow {
           text-shadow:
@@ -93,7 +93,7 @@ export default function Hero() {
           {/* Social Icons */}
           <div className="flex gap-5 mt-8 justify-center md:justify-start text-2xl">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/niy4z_ahmed/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-purple-400 hover:text-pink-400 transition"
@@ -101,7 +101,7 @@ export default function Hero() {
               <FaInstagram />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/niyazherkal/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-purple-400 hover:text-blue-400 transition"
@@ -109,7 +109,7 @@ export default function Hero() {
               <FaLinkedin />
             </a>
             <a
-              href="https://twitter.com"
+              href="https://x.com/Niyaznhh"
               target="_blank"
               rel="noopener noreferrer"
               className="text-purple-400 hover:text-cyan-400 transition"
@@ -117,13 +117,13 @@ export default function Hero() {
               <FaTwitter />
             </a>
             <a
-              href="mailto:niyaz@example.com"
+              href="mailto:niyaz47nhh@gmail.com"
               className="text-purple-400 hover:text-red-400 transition"
             >
               <FaEnvelope />
             </a>
             <a
-              href=""
+              href="https://github.com/LuC1f3-r"
               className="text-purple-400 hover:text-red-400 transition"
             >
               <FaGithub />
