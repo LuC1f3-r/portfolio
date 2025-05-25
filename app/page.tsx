@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/app/components/Navbar"; // Adjust the import path as needed
+import { motion } from "framer-motion";
+import Navbar from "@/app/components/Navbar";
+import Typewriter from "./components/Loader";
 import Hero from "@/app/components/Hero";
 import About from "@/app/about/page";
 import Experience from "./experience/page";
@@ -12,34 +14,28 @@ import Contact from "@/app/contacts/page";
 
 export default function Home() {
   const [showHero, setShowHero] = useState(true);
-  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const fadeTimer = setTimeout(() => setFadeOut(true), 4500);
     const hideTimer = setTimeout(() => setShowHero(false), 5000);
-    return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(hideTimer);
-    };
+    return () => clearTimeout(hideTimer);
   }, []);
 
-  // Hero splash screen with Navbar
-  // if (showHero) {
-  //   return (
-  //     <div className="relative w-full h-screen overflow-hidden">
-  //       <Navbar />
-  //       <main className="flex items-center justify-center w-full h-full">
-  //         <div
-  //           className={`flex items-center justify-center w-full h-full transition-opacity duration-500 ${
-  //             fadeOut ? "opacity-0" : "opacity-100"
-  //           }`}
-  //         >
-  //           <Hero />
-  //         </div>
-  //       </main>
-  //     </div>
-  //   );
-  // }
+  // Show loading animation splash screen on reload
+  if (showHero) {
+    return (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black text-green-400 font-mono px-4">
+        <motion.div
+          className="text-lg md:text-2xl leading-relaxed"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 7, ease: "easeInOut" }}
+          exit={{ opacity: 0, transition: { duration: 10 } }}
+        >
+          <Typewriter onComplete={() => setShowHero(false)} />
+        </motion.div>
+      </div>
+    );
+  }
 
   // Main content with all sections
   return (

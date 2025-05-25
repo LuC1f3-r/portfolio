@@ -17,7 +17,7 @@ export default function About() {
         <div className="space-y-6">
           <p className="text-zinc-400 text-sm font-mono">~/luc1f3r/about</p>
           <p className="text-lg sm:text-xl text-zinc-300 leading-relaxed">
-            Hi, I'm{" "}
+            Hi, I am{" "}
             <span className="text-purple-400 font-semibold">
               Niyaz Ahamad Herkal
             </span>{" "}
@@ -29,7 +29,7 @@ export default function About() {
             <span className="text-lg sm:text-xl text-zinc-300 leading-relaxed">
               I thrive in fast-paced environments, love solving complex
               problems, and enjoy collaborating with teams to deliver
-              high-impact solutions. When I’m not coding, you’ll find me
+              high-impact solutions. When I&apos;m not coding, you&apos;ll find me
               exploring new tech, contributing to open source, or gaming.
             </span>
           </p>

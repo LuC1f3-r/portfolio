@@ -143,15 +143,18 @@ export default function Hero() {
 
         {/* RIGHT SIDE */}
         <div className="w-full md:w-1/2 flex items-center justify-center">
-          {/* Placeholder image */}
-          <div className="w-[260px] h-[260px] rounded-full border-4 border-purple-500 overflow-hidden shadow-lg">
-            {/* Replace src with actual image later */}
+          {/* <div className="relative group w-[240px] h-[330px] rounded-xl overflow-hidden shadow-2xl border-4 border-purple-500 essence transition-transform duration-300 hover:scale-105">
             <img
-              src="/placeholder-profile.png"
+              src="/assets/profile-picture.png"
               alt="Niyaz"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
             />
-          </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/40 text-zinc-100 text-center text-lg font-semibold tracking-wide">
+              Niyaz Ahamad Herkal
+            </div>
+          </div> */}
         </div>
       </div>
     </section>

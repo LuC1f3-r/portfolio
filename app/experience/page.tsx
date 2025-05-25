@@ -3,13 +3,10 @@
 import { useEffect, useState, useRef } from "react";
 
 export default function Experience() {
-  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set([1, 2, 3]));
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    setCurrentYear(new Date().getFullYear());
-    
     // Intersection Observer for scroll animations
     observerRef.current = new IntersectionObserver(
       (entries) => {
