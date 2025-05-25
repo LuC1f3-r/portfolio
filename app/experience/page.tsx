@@ -98,8 +98,8 @@ export default function Experience() {
                           : "bg-zinc-800 border-2 border-purple-700 text-purple-300"
                       }`}
                     >
-                      <div className="font-bold text-sm">
-                        {exp.startYear}–{exp.isCurrent ? "Now" : exp.startYear + parseInt(exp.duration)}
+                      <div className="font-bold text-xl">
+                        {exp.startYear}
                       </div>
                       <div className="mt-1 text-xs opacity-80 font-normal">
                         {exp.duration}
@@ -198,8 +198,8 @@ export default function Experience() {
                         animationDelay: `${index * 200 + 300}ms`
                       }}
                     >
-                      <div className="font-bold text-base">
-                        {exp.startYear}–{exp.isCurrent ? "Now" : exp.startYear + parseInt(exp.duration)}
+                      <div className="font-bold text-2xl">
+                        {exp.startYear}
                       </div>
                       <div className="mt-1 text-xs opacity-80 font-normal">
                         {exp.duration}
