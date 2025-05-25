@@ -19,7 +19,7 @@ const projects = [
     name: "Self Driving Car",
     description:
       "Browser-based JS simulation with neural networks that mimic autonomous driving logic.",
-    link: "https://github.com/LuC1f3-r/self-driving-car",
+    link: "https://github.com/LuC1f3-r/Self-Driving-Car",
   },
 ];
 
