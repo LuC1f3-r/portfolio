@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import React, { useState } from "react";
 
 export default function About() {
+  const [open, setOpen] = useState(false);
   return (
     <section className="w-screen min-h-screen pt-16 flex flex-col items-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-800 text-zinc-100">
       {/* Centered About Me Title at Top */}
@@ -24,18 +25,44 @@ export default function About() {
             resilient systems with an obsession for{" "}
             <span className="text-purple-300">uptime</span>,{" "}
             <span className="text-purple-300">scalability</span>, and{" "}
-            <span className="text-purple-300">chaos resistance</span>.
+            <span className="text-purple-300">chaos resistance</span>.{" "}
+            <span className="text-lg sm:text-xl text-zinc-300 leading-relaxed">
+              I thrive in fast-paced environments, love solving complex
+              problems, and enjoy collaborating with teams to deliver
+              high-impact solutions. When I’m not coding, you’ll find me
+              exploring new tech, contributing to open source, or gaming.
+            </span>
           </p>
 
-          <Link
-            href="/cv.pdf"
-            download
-            className="inline-block text-white font-semibold py-3 px-6 rounded-full transition-transform transform hover:scale-105 shadow-lg relative overflow-hidden group"
-          >
-            <span className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-gradient-x group-hover:blur-sm"></span>
-            <span className="relative z-10">Download My CV</span>
-          </Link>
+          <div className="relative inline-block">
+            <button
+              onClick={() => setOpen(!open)}
+              className="relative inline-block text-white font-semibold py-3 px-6 rounded-full transition-transform transform hover:scale-105 shadow-lg overflow-hidden group border border-fuchsia-500/30"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-gradient-x z-0"></span>
+              <span className="relative z-10">Download CV</span>
+            </button>
 
+            {open && (
+              <div className="absolute mt-3 w-60 rounded-xl backdrop-blur-md border border-fuchsia-500/30 shadow-lg bg-gradient-to-br from-[#1a1a1a]/90 to-[#2a003f]/80 text-white">
+                {/* No internal padding */}
+                <a
+                  href="/assets/niyazahamadherkal-dark.pdf"
+                  download
+                  className="block w-full px-5 py-3 text-sm font-medium hover:bg-fuchsia-500/10 hover:pl-6 transition-all"
+                >
+                  🥷🏼 Download Dark Theme
+                </a>
+                <a
+                  href="/assets/niyazahamadherkal-dark.pdf"
+                  download
+                  className="block w-full px-5 py-3 text-sm font-medium hover:bg-fuchsia-500/10 hover:pl-6 transition-all"
+                >
+                  🧝🏻‍♂️ Download Light Theme
+                </a>
+              </div>
+            )}
+          </div>
           <style>{`
             @keyframes gradient-x {
               0% {
@@ -59,7 +86,7 @@ export default function About() {
               { label: "Backend Development", value: 90 },
               { label: "Web Design", value: 80 },
               { label: "UI Development", value: 80 },
-              { label: "[Placeholder]", value: 100 },
+              { label: "Copywriting", value: 85 },
             ].map((skill, i) => (
               <div key={i}>
                 <div className="flex justify-between mb-1">
