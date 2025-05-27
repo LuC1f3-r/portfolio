@@ -54,7 +54,7 @@ export default function About() {
                   🥷🏼 Download Dark Theme
                 </a>
                 <a
-                  href="/assets/niyazahamadherkal-dark.pdf"
+                  href="/assets/niyazahamadherkal-light.pdf"
                   download
                   className="block w-full px-5 py-3 text-sm font-medium hover:bg-fuchsia-500/10 hover:pl-6 transition-all"
                 >
