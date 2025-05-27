@@ -29,10 +29,8 @@ export default function ContactPage() {
         {/* Contact Form */}
         <form
           className="flex flex-col gap-4 animate-fade-in delay-200"
-          onSubmit={(e) => {
-            e.preventDefault();
-            alert("This form does not send messages yet. Please use the email or phone below to contact.");
-          }}
+          action="https://formsubmit.co/niyaz47nhh@gmail.com"
+          method="POST"
         >
           <input
             type="text"
