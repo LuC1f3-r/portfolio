@@ -197,7 +197,7 @@ export default function Experience() {
                       style={{
                         animationDelay: `${index * 200 + 300}ms`
                       }}
-                    >
+                    >aaaaaa
                       <div className="font-bold text-2xl">
                         {exp.startYear}
                       </div>
