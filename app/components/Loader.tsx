@@ -4,11 +4,9 @@ import { useEffect, useState } from "react";
 
 const lines = [
   "> Initializing portfolio...",
-  "> Loading neural modules...",
   "> Compiling aesthetic layers...",
   "> Booting core personality...",
   "> Accessing interface...",
-  "> Welcome back, Commander.",
 ];
 
 export default function Typewriter({ onComplete }: { onComplete: () => void }) {
