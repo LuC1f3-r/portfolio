@@ -24,7 +24,7 @@ export default function ContactPage() {
           <span className="text-purple-300 font-semibold">
             Let’s build something together.
           </span>
-        </p>aasfasdasdasd
+        </p>
 
         {/* Contact Form */}
         <form
