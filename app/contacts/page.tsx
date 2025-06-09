@@ -40,7 +40,7 @@ export default function ContactPage() {
           <input
             type="email"
             placeholder="Your Email"
-            className="p-3 rounded bg-zinc-800 border border-zinc-700 placeholder-zinc-500 focus:outline-none focus:border-purple-500"
+            className="p-3 rounded bg-zinc-800 border border-zinc-sdasdadasdasdas700 placeholder-zinc-500 focus:outline-none focus:border-purple-500"
           />
           <textarea
             placeholder="Your Message"
