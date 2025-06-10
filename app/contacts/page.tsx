@@ -25,7 +25,7 @@ export default function ContactPage() {
             Let’s build something together.
           </span>
         </p>
-asdasdsadasdsdsadas
+
         {/* Contact Form */}
         <form
           className="flex flex-col gap-4 animate-fade-in delay-200"
