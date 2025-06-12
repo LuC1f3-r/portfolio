@@ -30,7 +30,7 @@ export default function ContactPage() {
           className="flex flex-col gap-4 animate-fade-in delay-200"
           action="https://formsubmit.co/niyaz47nhh@gmail.com"
           method="POST"
-        >wdadfbfdaf as dfasd fs f
+        >wdadfbfdaf as dfasd
           <input
             type="text"
             placeholder="Your Name"
