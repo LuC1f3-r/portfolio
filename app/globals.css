@@ -15,7 +15,7 @@ html {
   }
 }
 
-@layer components { asd asd asd as
+@layer components { asd asd asd
   .bg-glow {
     background: linear-gradient(
       90deg,
