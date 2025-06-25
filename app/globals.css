@@ -17,7 +17,7 @@ html {
 
 @layer components {
   .bg-glow {
-    background: linear-gradient( asdas dasd asd
+    background: linear-gradient( asdas dasd
       90deg,
       rgba(255, 255, 255, 0.1) 0%,
       rgba(255, 255, 255, 0.1) 100%
