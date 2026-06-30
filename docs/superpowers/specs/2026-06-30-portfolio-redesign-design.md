@@ -63,6 +63,8 @@ redirects to the relevant anchor.
 
 ### Sections (top → bottom)
 
+Final order: Hero → About → Impact → Experience → Work → Stack → Contact.
+
 1. **Hero**
    - Name at massive scale.
    - **Signature kinetic moment: Day→Night name reveal** — the name fills the screen; on
@@ -101,12 +103,23 @@ redirects to the relevant anchor.
      - **URL Shortener** — Node.js / Redis / PostgreSQL, built for heavy traffic.
      - **Self-Driving Car** — browser JS neural-network driving simulation.
 
+4b. **Experience** — real career timeline as an editorial vertical list (NOT the current
+   purple year-circles with floating particles). Real, owner-confirmed roles:
+   - **CodeHaste** — Software Engineer, 2024–present (current). NestJS microservices, AWS
+     Cognito auth, end-to-end product dev, CI/CD, Jest testing (~95% coverage).
+   - **Zluri** — Software Development Engineer, 2023 (7 months). Backend features for
+     high-traffic integrations (Monday.com, JumpCloud, Azure, JFrog, GitBook).
+   - **BTrees Technologies** — Backend Developer Intern, 2022 (5 months). Led a 3-dev team
+     building a web app for an educational institution.
+
 5. **Stack** — real tech as a quiet typographic index (no glowing hover cards, no star
    background): TypeScript, Python · NestJS, Node.js, Flask, React, Next.js · Docker,
    PostgreSQL, Redis, MongoDB, Kafka, AWS SQS, AWS, Linux, Git.
 
-6. **Contact** — large closing statement + real socials. The **Batman line is the
-   easter-egg payoff** here ("…and by night, I'm Batman.").
+6. **Contact** — large closing statement + real socials/contact details (email
+   niyaz47nhh@gmail.com, phone +91 88848 01005, Bangalore, `formsubmit.co` form,
+   `cal.com/niyazherkal` booking). The **Batman line is the easter-egg payoff** here
+   ("…and by night, I'm Batman.").
 
 ## 5. Voice / content rules
 
@@ -123,7 +136,22 @@ direction); the dual-theme CV download.
 
 **Removed:** purple/pink gradient text; skill-% bars; floating orbs/particles/stars; glow
 shadows; "Engineer of Chaos" / "Code Whisperer" / "Tech Arsenal" / "Welcome to the
-experience" copy; the fabricated 98% uptime / 10+ projects stats.
+experience" copy; the fabricated 98% uptime / 10+ projects stats; the entire **Services**
+section (`app/services/page.tsx`) as generic filler; the purple scrollbar gradient, glow
+utility classes, and `body::before` scan-line overlay in `globals.css`; the page-load
+metadata "Engineer of Chaos" / "Code Whisperer" strings in `layout.tsx`.
+
+**Restyled (kept, re-skinned to the new system):** `StoryLoader` (keep the cinematic
+loader idea, re-skin to near-black + lime, honor reduced-motion), `cursorTrail` (minimal,
+lime, disabled on touch + reduced-motion), `ScrollProgress`, `Navbar`, `Footer`,
+`SectionTransition` helpers (`TextReveal`/`StaggerReveal`/`ParallaxLayer` reused).
+
+### Typography (self-hosted via `next/font/google`)
+
+- **Display (headings):** Bricolage Grotesque — editorial, oversized, tight tracking.
+- **Body:** Inter (or Geist) — clean grotesk.
+- **Mono (numbers/labels/code only):** JetBrains Mono.
+- Exposed as CSS variables `--font-display`, `--font-body`, `--font-mono` on `<html>`.
 
 ## 7. Non-goals (YAGNI)
 
