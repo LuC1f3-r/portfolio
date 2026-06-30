@@ -1,8 +1,6 @@
-import Navbar from "@/app/components/Navbar";
-import Footer from "@/app/components/Footer";
 import "./globals.css";
-import PageWrapper from "./components/pageWrapper";
 import CursorTrail from "./components/cursorTrail";
+import Script from "next/script";
 
 export const metadata = {
   title: "LuC1f3-r | Backend Engineer of Chaos",
@@ -45,27 +43,25 @@ export const metadata = {
   },
 };
 
-<script
-  async
-  defer
-  data-domain="luc1f3r.vercel.app"
-  src="https://plausible.io/js/plausible.js"
-></script>;
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-black text-white">
-        <Navbar />
+    <html lang="en" className="lenis">
+      <head>
+        <Script
+          async
+          defer
+          data-domain="luc1f3r.vercel.app"
+          src="https://plausible.io/js/plausible.js"
+          strategy="afterInteractive"
+        />
+      </head>
+      <body className="bg-black text-white antialiased">
         <CursorTrail />
-        <PageWrapper>
-          {children}
-        </PageWrapper>
-        <Footer />
+        {children}
       </body>
     </html>
   );

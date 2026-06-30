@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import StoryLoader from "@/app/components/StoryLoader";
+import SmoothScroll from "@/app/components/SmoothScroll";
+import ScrollProgress from "@/app/components/ScrollProgress";
+import SectionTransition from "@/app/components/SectionTransition";
 import Navbar from "@/app/components/Navbar";
-import Typewriter from "./components/Loader";
+import Footer from "@/app/components/Footer";
 import Hero from "@/app/components/Hero";
 import About from "@/app/about/page";
 import Experience from "./experience/page";
@@ -13,65 +16,86 @@ import TechStack from "@/app/techstack/page";
 import Contact from "@/app/contacts/page";
 
 export default function Home() {
-  const [showHero, setShowHero] = useState(true);
+  const [showLoader, setShowLoader] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
+  const handleLoaderComplete = () => {
+    setShowLoader(false);
+    // Small delay before enabling content
+    setTimeout(() => setIsReady(true), 300);
+  };
+
+  // Prevent scroll during loading
   useEffect(() => {
-    const hideTimer = setTimeout(() => setShowHero(false), 5000);
-    return () => clearTimeout(hideTimer);
-  }, []);
+    if (showLoader) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showLoader]);
 
-  // Show loading animation splash screen on reload
-  if (showHero) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black text-green-400 font-mono px-4">
-        <motion.div
-          className="text-lg md:text-2xl leading-relaxed"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 7, ease: "easeInOut" }}
-          exit={{ opacity: 0, transition: { duration: 10 } }}
-        >
-          <Typewriter onComplete={() => setShowHero(false)} />
-        </motion.div>
-      </div>
-    );
-  }
-
-  // Main content with all sections
   return (
-    <div className="relative w-full">
-      <Navbar />
-      {/* Add padding-top to account for fixed navbar */}
-      <main className="w-full">
-        {/* Each section should have proper spacing and IDs for navigation */}
-        <section id="home" className="min-h-screen">
-          <Hero />
-        </section>
+    <>
+      {/* Cinematic Loader */}
+      {showLoader && <StoryLoader onComplete={handleLoaderComplete} />}
 
-        <section id="about" className="min-h-screen">
-          <About />
-        </section>
+      {/* Main Content */}
+      <SmoothScroll>
+        <div 
+          className={`relative w-full transition-opacity duration-700 ${
+            isReady ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {/* Navigation */}
+          <Navbar />
+          
+          {/* Scroll Progress Indicator */}
+          <ScrollProgress />
 
-        <section id="experience" className="min-h-screen">
-          <Experience />
-        </section>
+          <main className="w-full">
+            {/* Hero Section */}
+            <section id="home" className="min-h-screen">
+              <Hero />
+            </section>
 
-        <section id="projects" className="min-h-screen">
-          <Projects />
-        </section>
+            {/* About Section */}
+            <SectionTransition id="about" transitionType="maskReveal">
+              <About />
+            </SectionTransition>
 
-        <section id="services" className="min-h-screen">
-          <Services />
-        </section>
+            {/* Experience Section */}
+            <SectionTransition id="experience" transitionType="diagonalWipe">
+              <Experience />
+            </SectionTransition>
 
-        <section id="techstack" className="min-h-screen">
-          <TechStack />
-        </section>
+            {/* Projects Section */}
+            <SectionTransition id="projects" transitionType="slideUp">
+              <Projects />
+            </SectionTransition>
 
-        <section id="contacts" className="min-h-screen">
-          <Contact />
-        </section>
-      </main>
-    </div>
+            {/* Services Section */}
+            <SectionTransition id="services" transitionType="scaleIn">
+              <Services />
+            </SectionTransition>
+
+            {/* TechStack Section */}
+            <SectionTransition id="techstack" transitionType="maskReveal">
+              <TechStack />
+            </SectionTransition>
+
+            {/* Contact Section */}
+            <SectionTransition id="contacts" transitionType="fade">
+              <Contact />
+            </SectionTransition>
+          </main>
+
+          {/* Footer */}
+          <Footer />
+        </div>
+      </SmoothScroll>
+    </>
   );
 }

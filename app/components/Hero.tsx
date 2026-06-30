@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   FaInstagram,
   FaLinkedin,
@@ -9,6 +12,11 @@ import {
   FaTwitter,
   FaGithub,
 } from "react-icons/fa";
+
+// Register GSAP plugins
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const roles = [
   "Backend Developer",
@@ -18,17 +26,25 @@ const roles = [
 ];
 
 export default function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const bgLayer1Ref = useRef<HTMLDivElement>(null);
+  const bgLayer2Ref = useRef<HTMLDivElement>(null);
+  const bgLayer3Ref = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  
   const [currentText, setCurrentText] = useState("");
   const [roleIndex, setRoleIndex] = useState(0);
   const [typingIndex, setTypingIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
+  // Typing effect
   useEffect(() => {
     const fullText = roles[roleIndex];
-    let delay = isDeleting ? 25 : 50; // Faster animation
+    let delay = isDeleting ? 25 : 50;
 
     if (!isDeleting && typingIndex === fullText.length) {
-      delay = 700; // Shorter pause at end
+      delay = 700;
     }
 
     const timeout = setTimeout(() => {
@@ -49,115 +65,263 @@ export default function Hero() {
     }, delay);
 
     return () => clearTimeout(timeout);
-    // eslint-disable-next-line
   }, [typingIndex, isDeleting, roleIndex]);
 
-  return (
-    <section className="min-h-screen pt-0 w-full flex items-center justify-center bg-gradient-to-br from-black via-zinc-900 to-gray-900 p-6 sm:p-12">
-      <style>{`
-        .glow {
-          text-shadow:
-            0 0 8px #a78bfa,
-            0 0 16px #a78bfa,
-            0 0 32px #a78bfa,
-            0 0 64px #a78bfa;
-          animation: glowPulse 2s infinite alternate;
-        }
-        @keyframes glowPulse {
-          0% { text-shadow: 0 0 8px #a78bfa, 0 0 16px #a78bfa, 0 0 32px #a78bfa, 0 0 64px #a78bfa; }
-          100% { text-shadow: 0 0 16px #c4b5fd, 0 0 32px #c4b5fd, 0 0 64px #c4b5fd, 0 0 128px #c4b5fd; }
-        }
-        .essence {
-          background: linear-gradient(90deg, rgba(200,200,200,0.08) 0%, rgba(180,180,180,0.13) 100%);
-          color: #e5e7eb;
-          border-radius: 0.5rem;
-          box-shadow: 0 2px 32px 0 rgba(200,200,200,0.08);
-        }
-      `}</style>
+  // Parallax scroll effects
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
 
-      <div className="flex flex-col md:flex-row items-center justify-between gap-10 max-w-6xl w-full mx-auto">
-        {/* LEFT SIDE */}
-        <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-4">
-          <h1 className="text-base sm:text-lg text-zinc-400">Heya, I am</h1>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-zinc-100 glow select-none">
-        Niyaz Ahamad Herkal
-          </h2>
-          <div className="flex items-center gap-2 border-t border-b border-zinc-700 px-2 py-2 w-full max-w-xs justify-center md:justify-start mt-4">
-        <div className="text-purple-400 text-lg sm:text-2xl min-h-[2.5rem] font-medium">
-          {currentText}
-          <span className="animate-pulse">|</span>
-        </div>
-          </div>
-          {/* Social Icons */}
-          <div className="flex gap-4 mt-6 justify-center md:justify-start text-xl sm:text-2xl">
-        <a
-          href="https://www.instagram.com/niy4z_ahmed/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-400 hover:text-pink-400 transition"
-          aria-label="Instagram"
-        >
-          <FaInstagram />
-        </a>
-        <a
-          href="https://www.linkedin.com/in/niyazherkal/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-400 hover:text-blue-400 transition"
-          aria-label="LinkedIn"
-        >
-          <FaLinkedin />
-        </a>
-        <a
-          href="https://x.com/Niyaznhh"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-400 hover:text-cyan-400 transition"
-          aria-label="Twitter"
-        >
-          <FaTwitter />
-        </a>
-        <a
-          href="mailto:niyaz47nhh@gmail.com"
-          className="text-purple-400 hover:text-red-400 transition"
-          aria-label="Email"
-        >
-          <FaEnvelope />
-        </a>
-        <a
-          href="https://github.com/LuC1f3-r"
-          className="text-purple-400 hover:text-red-400 transition"
-          aria-label="GitHub"
-        >
-          <FaGithub />
-        </a>
-          </div>
-          {/* CTA Button */}
-          <div className="mt-6 w-full flex justify-center md:justify-start">
-        <Link
-          href="#about"
-          className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all duration-300"
-        >
-          View my Portfolio
-        </Link>
-          </div>
-        </div>
-        {/* RIGHT SIDE */}
-        {/* <div className="w-full md:w-1/2 flex items-center justify-center mt-10 md:mt-0">
-          <div className="relative group w-40 sm:w-56 h-56 sm:h-[330px] rounded-xl overflow-hidden shadow-2xl border-4 border-purple-500 essence transition-transform duration-300 hover:scale-105">
-        <img
-          src="/assets/profile-picture.png"
-          alt="Niyaz"
-          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/40 text-zinc-100 text-center text-base sm:text-lg font-semibold tracking-wide">
-          Niyaz Ahamad Herkal
-        </div>
-          </div>
-        </div> */}
+    // Trigger visibility after mount
+    setIsVisible(true);
+
+    // Parallax layers
+    if (bgLayer1Ref.current) {
+      gsap.to(bgLayer1Ref.current, {
+        yPercent: -30,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+
+    if (bgLayer2Ref.current) {
+      gsap.to(bgLayer2Ref.current, {
+        yPercent: -50,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+
+    if (bgLayer3Ref.current) {
+      gsap.to(bgLayer3Ref.current, {
+        yPercent: -20,
+        scale: 1.1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+
+    // Content fade out on scroll
+    if (contentRef.current) {
+      gsap.to(contentRef.current, {
+        opacity: 0,
+        y: -100,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "center top",
+          scrub: true,
+        },
+      });
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  const socialLinks = [
+    { icon: FaInstagram, href: "https://www.instagram.com/niy4z_ahmed/", label: "Instagram", hoverColor: "hover:text-pink-400" },
+    { icon: FaLinkedin, href: "https://www.linkedin.com/in/niyazherkal/", label: "LinkedIn", hoverColor: "hover:text-blue-400" },
+    { icon: FaTwitter, href: "https://x.com/Niyaznhh", label: "Twitter", hoverColor: "hover:text-cyan-400" },
+    { icon: FaEnvelope, href: "mailto:niyaz47nhh@gmail.com", label: "Email", hoverColor: "hover:text-red-400" },
+    { icon: FaGithub, href: "https://github.com/LuC1f3-r", label: "GitHub", hoverColor: "hover:text-white" },
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-black"
+    >
+      {/* Parallax Background Layers */}
+      
+      {/* Layer 1: Deep space gradient */}
+      <div
+        ref={bgLayer1Ref}
+        className="absolute inset-0 w-full h-[130%]"
+        style={{
+          background: "radial-gradient(ellipse at center, rgba(88, 28, 135, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.2) 0%, transparent 40%)",
+        }}
+      />
+
+      {/* Layer 2: Floating orbs */}
+      <div ref={bgLayer2Ref} className="absolute inset-0 w-full h-[150%] pointer-events-none">
+        <div className="absolute top-[10%] left-[10%] w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-[40%] right-[5%] w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-[20%] left-[30%] w-72 h-72 bg-violet-500/10 rounded-full blur-3xl" />
       </div>
+
+      {/* Layer 3: Grid pattern */}
+      <div
+        ref={bgLayer3Ref}
+        className="absolute inset-0 w-full h-[120%] opacity-20 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: "80px 80px",
+        }}
+      />
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-purple-400/60 rounded-full"
+            initial={{
+              x: `${Math.random() * 100}%`,
+              y: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [`${Math.random() * 100}%`, `${Math.random() * 100}%`],
+              x: [`${Math.random() * 100}%`, `${Math.random() * 100}%`],
+              opacity: [0.2, 0.8, 0.2],
+            }}
+            transition={{
+              duration: 10 + Math.random() * 10,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Main Content */}
+      <div
+        ref={contentRef}
+        className="relative z-10 flex flex-col items-center justify-center text-center px-6"
+      >
+        {/* Glowing title */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="mb-4"
+        >
+          <span className="text-sm md:text-base text-purple-400 font-mono tracking-widest uppercase">
+            Welcome to the experience
+          </span>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
+          transition={{ duration: 1, delay: 0.4 }}
+          className="text-5xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-white mb-4 leading-tight"
+          style={{
+            textShadow: "0 0 60px rgba(139, 92, 246, 0.5)",
+          }}
+        >
+          Niyaz Ahamad
+          <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+            Herkal
+          </span>
+        </motion.h1>
+
+        {/* Typing role */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
+          transition={{ duration: 1, delay: 0.6 }}
+          className="flex items-center gap-2 px-4 py-2 border border-purple-500/30 rounded-full bg-black/30 backdrop-blur-sm mb-8"
+        >
+          <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+          <span className="text-purple-300 text-lg md:text-xl font-mono min-w-[280px]">
+            {currentText}
+            <span className="animate-pulse">|</span>
+          </span>
+        </motion.div>
+
+        {/* Social Links */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          className="flex gap-6 mb-10"
+        >
+          {socialLinks.map(({ icon: Icon, href, label, hoverColor }) => (
+            <motion.a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`text-2xl text-purple-400/70 ${hoverColor} transition-all duration-300`}
+              aria-label={label}
+              whileHover={{ scale: 1.2, y: -3 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Icon />
+            </motion.a>
+          ))}
+        </motion.div>
+
+        {/* CTA Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
+          transition={{ duration: 1, delay: 1 }}
+        >
+          <Link
+            href="#about"
+            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30"
+          >
+            <span className="relative z-10">Explore My Story</span>
+            <motion.span
+              className="relative z-10"
+              animate={{ y: [0, 3, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              ↓
+            </motion.span>
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </Link>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isVisible ? 0.5 : 0 }}
+          transition={{ duration: 1, delay: 1.5 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="flex flex-col items-center gap-2"
+          >
+            <span className="text-xs text-zinc-500 font-mono tracking-widest">SCROLL</span>
+            <div className="w-5 h-8 border-2 border-zinc-600 rounded-full flex justify-center pt-2">
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="w-1 h-2 bg-purple-400 rounded-full"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Gradient overlay at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
     </section>
   );
 }
