@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -29,30 +29,6 @@ export default function Hero() {
   const lineOneRef = useRef<HTMLSpanElement>(null);
   const lineTwoRef = useRef<HTMLSpanElement>(null);
   const igniteRef = useRef<HTMLSpanElement>(null);
-  const [glitching, setGlitching] = useState(false);
-
-  // Random glitch that briefly reveals the "LuC1f3-r" handle behind the name.
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let flashTimer: ReturnType<typeof setTimeout>;
-    let scheduleTimer: ReturnType<typeof setTimeout>;
-
-    const loop = () => {
-      const delay = 2600 + Math.random() * 4200; // 2.6s–6.8s between glitches
-      scheduleTimer = setTimeout(() => {
-        setGlitching(true);
-        flashTimer = setTimeout(() => setGlitching(false), 360);
-        loop();
-      }, delay);
-    };
-    loop();
-
-    return () => {
-      clearTimeout(scheduleTimer);
-      clearTimeout(flashTimer);
-    };
-  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -115,20 +91,12 @@ export default function Hero() {
       ref={sectionRef}
       className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-6"
     >
-      {/* Ghost monogram that randomly glitches into the "LuC1f3-r" handle */}
+      {/* Static ghost monogram (the glitch reveal now lives in the loader) */}
       <div
         aria-hidden
-        className={`glitch-word pointer-events-none absolute inset-0 z-0 grid place-items-center ${
-          glitching ? "is-glitching" : ""
-        }`}
+        className="pointer-events-none absolute inset-0 z-0 grid place-items-center"
       >
-        <span className="glitch-word__layer glitch-word__base font-[family-name:var(--font-mono)] text-[26vw] font-bold leading-none tracking-tighter md:text-[20vw]">
-          LuC1f3-r
-        </span>
-        <span className="glitch-word__layer glitch-word__ghost glitch-word__ghost--cyan font-[family-name:var(--font-mono)] text-[26vw] font-bold leading-none tracking-tighter md:text-[20vw]">
-          LuC1f3-r
-        </span>
-        <span className="glitch-word__layer glitch-word__ghost glitch-word__ghost--lime font-[family-name:var(--font-mono)] text-[26vw] font-bold leading-none tracking-tighter md:text-[20vw]">
+        <span className="font-[family-name:var(--font-mono)] text-[26vw] font-bold leading-none tracking-tighter text-[#131313] md:text-[20vw]">
           LuC1f3-r
         </span>
       </div>

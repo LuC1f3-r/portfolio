@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import StoryLoader from "@/app/components/StoryLoader";
 import SmoothScroll from "@/app/components/SmoothScroll";
-import ScrollProgress from "@/app/components/ScrollProgress";
 import SectionTransition from "@/app/components/SectionTransition";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
@@ -51,9 +50,6 @@ export default function Home() {
         >
           {/* Navigation */}
           <Navbar />
-          
-          {/* Scroll Progress Indicator */}
-          <ScrollProgress />
 
           <main className="w-full">
             {/* Hero Section */}
