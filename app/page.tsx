@@ -9,9 +9,9 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import Hero from "@/app/components/Hero";
 import About from "@/app/about/page";
+import Impact from "@/app/components/Impact";
 import Experience from "./experience/page";
 import Projects from "@/app/projects/page";
-import Services from "@/app/services/page";
 import TechStack from "@/app/techstack/page";
 import Contact from "@/app/contacts/page";
 
@@ -66,8 +66,13 @@ export default function Home() {
               <About />
             </SectionTransition>
 
+            {/* Impact Section */}
+            <SectionTransition id="impact" transitionType="fade">
+              <Impact />
+            </SectionTransition>
+
             {/* Experience Section */}
-            <SectionTransition id="experience" transitionType="diagonalWipe">
+            <SectionTransition id="experience" transitionType="slideUp">
               <Experience />
             </SectionTransition>
 
@@ -76,13 +81,8 @@ export default function Home() {
               <Projects />
             </SectionTransition>
 
-            {/* Services Section */}
-            <SectionTransition id="services" transitionType="scaleIn">
-              <Services />
-            </SectionTransition>
-
             {/* TechStack Section */}
-            <SectionTransition id="techstack" transitionType="maskReveal">
+            <SectionTransition id="techstack" transitionType="fade">
               <TechStack />
             </SectionTransition>
 
