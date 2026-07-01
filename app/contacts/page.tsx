@@ -4,7 +4,6 @@ import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { Send, ArrowUpRight } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -12,26 +11,30 @@ if (typeof window !== "undefined") {
 }
 
 export default function ContactPage() {
-  const sectionRef = useRef<HTMLElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (!formRef.current) return;
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // Skip animation — leave elements at their final visible state
+      return;
+    }
+
     const inputs = formRef.current.querySelectorAll("input, textarea, button");
-    
+
     gsap.fromTo(
       inputs,
-      { y: 30, opacity: 0 },
+      { y: 24, opacity: 0 },
       {
         y: 0,
         opacity: 1,
-        duration: 0.6,
-        stagger: 0.1,
+        duration: 0.55,
+        stagger: 0.08,
         ease: "power3.out",
         scrollTrigger: {
           trigger: formRef.current,
-          start: "top 80%",
+          start: "top 82%",
           toggleActions: "play none none reverse",
         },
       }
@@ -42,21 +45,18 @@ export default function ContactPage() {
     };
   }, []);
 
-  const contactInfo = [
+  const contactItems = [
     {
-      icon: FaPhoneAlt,
-      label: "Phone",
-      value: "+91 88848 01005",
-      href: "tel:+918884801005",
-    },
-    {
-      icon: FaEnvelope,
       label: "Email",
       value: "niyaz47nhh@gmail.com",
       href: "mailto:niyaz47nhh@gmail.com",
     },
     {
-      icon: FaMapMarkerAlt,
+      label: "Phone",
+      value: "+91 88848 01005",
+      href: "tel:+918884801005",
+    },
+    {
       label: "Location",
       value: "Bangalore, India",
       href: null,
@@ -64,176 +64,179 @@ export default function ContactPage() {
   ];
 
   return (
-    <main
-      ref={sectionRef}
-      className="min-h-screen w-full py-24 px-6 flex flex-col items-center justify-center bg-gradient-to-br from-purple-950/50 via-black to-zinc-950 relative overflow-hidden text-zinc-100"
-    >
-      {/* Background effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -top-48 -left-48" />
-        <div className="absolute w-96 h-96 bg-pink-500/10 rounded-full blur-3xl -bottom-48 -right-48" />
-      </div>
+    <main className="min-h-screen w-full py-24 px-6 flex flex-col items-center justify-center bg-[#0a0a0a] relative overflow-hidden text-[#ededed]">
 
-      {/* Section indicator */}
+      {/* Kicker */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="relative z-10 mb-6"
+        className="mb-8 self-start w-full max-w-4xl mx-auto"
       >
-        <span className="text-xs font-mono text-purple-500 tracking-widest uppercase">
-          // 07. Contact
+        <span className="font-mono-token text-xs text-[#888] tracking-widest uppercase">
+          Contact
         </span>
       </motion.div>
 
-      {/* Title */}
+      {/* Closing statement */}
       <motion.h2
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="relative z-10 text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600 mb-4 text-center"
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none text-[#ededed] mb-16 self-start w-full max-w-4xl mx-auto"
       >
-        Get In Touch
+        Let&apos;s build<br />
+        something.
       </motion.h2>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.2 }}
-        className="relative z-10 text-zinc-400 text-lg text-center mb-12 max-w-lg"
-      >
-        Have a project, idea, or opportunity?{" "}
-        <span className="text-purple-400">Let&apos;s build something together.</span>
-      </motion.p>
+      {/* Main grid */}
+      <div className="relative z-10 w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12">
 
-      {/* Main content grid */}
-      <div className="relative z-10 w-full max-w-4xl grid grid-cols-1 lg:grid-cols-5 gap-12">
-        {/* Contact Form */}
+        {/* Contact form */}
         <form
           ref={formRef}
-          className="lg:col-span-3 flex flex-col gap-5 bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl p-8"
+          className="lg:col-span-3 flex flex-col gap-5"
           action="https://formsubmit.co/niyaz47nhh@gmail.com"
           method="POST"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-zinc-500 font-mono mb-2 block">Name</label>
+              <label className="font-mono-token text-xs text-[#888] mb-2 block tracking-wide uppercase">
+                Name
+              </label>
               <input
                 type="text"
                 name="name"
                 required
                 placeholder="John Doe"
-                className="w-full p-4 rounded-xl bg-zinc-800/50 border border-zinc-700 placeholder-zinc-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all"
+                className="w-full px-4 py-3 bg-[#111] border border-[#1a1a1a] text-[#ededed] placeholder-[#444] rounded-none focus:outline-none focus:border-[#c8ff00] focus:ring-1 focus:ring-[#c8ff00] transition-all duration-200"
               />
             </div>
             <div>
-              <label className="text-xs text-zinc-500 font-mono mb-2 block">Email</label>
+              <label className="font-mono-token text-xs text-[#888] mb-2 block tracking-wide uppercase">
+                Email
+              </label>
               <input
                 type="email"
                 name="email"
                 required
                 placeholder="john@example.com"
-                className="w-full p-4 rounded-xl bg-zinc-800/50 border border-zinc-700 placeholder-zinc-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all"
+                className="w-full px-4 py-3 bg-[#111] border border-[#1a1a1a] text-[#ededed] placeholder-[#444] rounded-none focus:outline-none focus:border-[#c8ff00] focus:ring-1 focus:ring-[#c8ff00] transition-all duration-200"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-zinc-500 font-mono mb-2 block">Subject</label>
+            <label className="font-mono-token text-xs text-[#888] mb-2 block tracking-wide uppercase">
+              Subject
+            </label>
             <input
               type="text"
               name="subject"
               placeholder="Project Inquiry"
-              className="w-full p-4 rounded-xl bg-zinc-800/50 border border-zinc-700 placeholder-zinc-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all"
+              className="w-full px-4 py-3 bg-[#111] border border-[#1a1a1a] text-[#ededed] placeholder-[#444] rounded-none focus:outline-none focus:border-[#c8ff00] focus:ring-1 focus:ring-[#c8ff00] transition-all duration-200"
             />
           </div>
 
           <div>
-            <label className="text-xs text-zinc-500 font-mono mb-2 block">Message</label>
+            <label className="font-mono-token text-xs text-[#888] mb-2 block tracking-wide uppercase">
+              Message
+            </label>
             <textarea
               name="message"
               required
               placeholder="Tell me about your project..."
               rows={5}
-              className="w-full p-4 rounded-xl bg-zinc-800/50 border border-zinc-700 placeholder-zinc-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all resize-none"
+              className="w-full px-4 py-3 bg-[#111] border border-[#1a1a1a] text-[#ededed] placeholder-[#444] rounded-none focus:outline-none focus:border-[#c8ff00] focus:ring-1 focus:ring-[#c8ff00] transition-all duration-200 resize-none"
             />
           </div>
 
-          {/* Hidden formsubmit fields */}
+          {/* Hidden formsubmit fields — do not remove */}
           <input type="hidden" name="_next" value="https://luc1f3r.vercel.app" />
           <input type="hidden" name="_captcha" value="false" />
 
           <motion.button
             whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileTap={{ scale: 0.97 }}
             type="submit"
-            className="mt-2 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all text-white font-semibold shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 group"
+            className="mt-1 px-8 py-4 bg-[#c8ff00] text-[#000] font-semibold tracking-wide flex items-center justify-center gap-2 group transition-opacity duration-200 hover:opacity-90"
           >
             <span>Send Message</span>
-            <Send size={18} className="transition-transform group-hover:translate-x-1" />
+            <Send size={16} className="transition-transform group-hover:translate-x-1" />
           </motion.button>
         </form>
 
-        {/* Contact Info Side */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Contact cards */}
-          {contactInfo.map((info, idx) => {
-            const Icon = info.icon;
-            const Wrapper = info.href ? "a" : "div";
-            
-            return (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <Wrapper
-                  {...(info.href ? { href: info.href } : {})}
-                  className="group flex items-center gap-4 p-5 bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl hover:border-purple-500/50 transition-all cursor-pointer"
-                >
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-                    <Icon size={20} className="text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-zinc-500 font-mono">{info.label}</p>
-                    <p className="text-white group-hover:text-purple-400 transition-colors">
-                      {info.value}
-                    </p>
-                  </div>
-                  {info.href && (
-                    <ArrowUpRight size={18} className="text-zinc-600 group-hover:text-purple-400 transition-colors" />
-                  )}
-                </Wrapper>
-              </motion.div>
-            );
-          })}
+        {/* Info side */}
+        <div className="lg:col-span-2 flex flex-col gap-8">
 
-          {/* CTA */}
+          {/* Contact list */}
+          <ul className="flex flex-col gap-5">
+            {contactItems.map((item, idx) => {
+              const isLink = !!item.href;
+              return (
+                <motion.li
+                  key={idx}
+                  initial={{ opacity: 0, x: 16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.09, duration: 0.5, ease: "easeOut" }}
+                  className="border-b border-[#1a1a1a] pb-5"
+                >
+                  <span className="font-mono-token text-[10px] text-[#888] tracking-widest uppercase block mb-1">
+                    {item.label}
+                  </span>
+                  {isLink ? (
+                    <a
+                      href={item.href!}
+                      className="text-[#ededed] hover:text-[#c8ff00] transition-colors duration-200 text-base"
+                    >
+                      {item.value}
+                    </a>
+                  ) : (
+                    <span className="text-[#ededed] text-base">{item.value}</span>
+                  )}
+                </motion.li>
+              );
+            })}
+          </ul>
+
+          {/* Book a call */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="mt-4 p-6 bg-gradient-to-br from-purple-900/30 to-pink-900/20 border border-purple-500/20 rounded-xl"
+            transition={{ delay: 0.35 }}
           >
-            <p className="text-sm text-zinc-400 mb-3">
-              Prefer a quick call? Let&apos;s schedule a meeting.
+            <p className="font-mono-token text-[10px] text-[#888] tracking-widest uppercase mb-2">
+              Schedule
             </p>
             <a
               href="https://cal.com/niyazherkal"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-purple-400 hover:text-pink-400 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-1.5 text-[#ededed] hover:text-[#c8ff00] transition-colors duration-200 text-sm group"
             >
               <span>Book a call</span>
-              <ArrowUpRight size={14} />
+              <ArrowUpRight
+                size={14}
+                className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
             </a>
           </motion.div>
         </div>
       </div>
+
+      {/* Batman easter egg */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+        className="font-mono-token text-[11px] text-[#888] tracking-wide mt-20 self-start w-full max-w-4xl mx-auto hover:text-[#c8ff00] transition-colors duration-300 cursor-default select-none"
+      >
+        Full-time developer by day. And by night, I&apos;m Batman.
+      </motion.p>
     </main>
   );
 }
