@@ -33,6 +33,18 @@ export default function SectionTransition({
     const section = sectionRef.current;
     const content = contentRef.current;
 
+    // Respect reduced-motion: reveal content immediately, skip scroll animation.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(content, {
+        clipPath: "inset(0% 0% 0% 0%)",
+        opacity: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+      });
+      return;
+    }
+
     // Create scroll trigger animations based on type
     let animation: gsap.core.Timeline;
 
