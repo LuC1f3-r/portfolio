@@ -25,17 +25,18 @@ const socialLinks = [
 ];
 
 // The middle band cycles these in a glitchy manner (the "hybrid" layout).
-const cyclePhrases = [
+const dayCyclePhrases = [
   "LuC1f3-r",
   "Backend Engineer",
   "Microservices Architect",
   "Event-Driven Systems",
   "AWS Cloud",
 ];
-
-// TODO(night copy): replace with the user's exact "by night" wording.
-const NIGHT_TITLE = "By night, I'm Batman.";
-const NIGHT_SUB = "Freelancer & explorer after dark.";
+const nightCyclePhrases = [
+  "Full Stack Developer",
+  "Product Architect",
+  "Absorbing Something New",
+];
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -58,7 +59,8 @@ export default function Hero() {
     let settle: ReturnType<typeof setTimeout>;
     const tick = setInterval(() => {
       setCycleGlitch(true);
-      swap = setTimeout(() => setPhrase((p) => (p + 1) % cyclePhrases.length), 170);
+      // 15 = lcm-ish of the two arrays so both bands stay aligned and bounded.
+      swap = setTimeout(() => setPhrase((p) => (p + 1) % 15), 170);
       settle = setTimeout(() => setCycleGlitch(false), 360);
     }, 2200);
     return () => {
@@ -120,11 +122,11 @@ export default function Hero() {
           </p>
         </div>
         <div className="border-t border-[#111]/15 pt-8">
-          <p className="font-[family-name:var(--font-display)] text-2xl text-[#111]">
-            {NIGHT_TITLE}
+          <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.35em] text-[#888]">
+            During the night
           </p>
-          <p className="mt-1 font-[family-name:var(--font-mono)] text-xs text-[#555]">
-            {NIGHT_SUB}
+          <p className="mt-2 font-[family-name:var(--font-mono)] text-sm text-[#333]">
+            Full Stack Developer · Product Architect · Absorbing Something New
           </p>
         </div>
       </section>
@@ -157,13 +159,13 @@ export default function Hero() {
           aria-live="polite"
         >
           <span className="glitch-word__layer glitch-word__base font-[family-name:var(--font-mono)] text-2xl font-bold tracking-tight md:text-4xl">
-            {cyclePhrases[phrase]}
+            {dayCyclePhrases[phrase % dayCyclePhrases.length]}
           </span>
           <span className="glitch-word__layer glitch-word__ghost glitch-word__ghost--cyan font-[family-name:var(--font-mono)] text-2xl font-bold tracking-tight md:text-4xl">
-            {cyclePhrases[phrase]}
+            {dayCyclePhrases[phrase % dayCyclePhrases.length]}
           </span>
           <span className="glitch-word__layer glitch-word__ghost glitch-word__ghost--lime font-[family-name:var(--font-mono)] text-2xl font-bold tracking-tight md:text-4xl">
-            {cyclePhrases[phrase]}
+            {dayCyclePhrases[phrase % dayCyclePhrases.length]}
           </span>
         </div>
 
@@ -200,19 +202,42 @@ export default function Hero() {
         </span>
       </div>
 
-      {/* NIGHT */}
+      {/* NIGHT — mirrors the day layout: same name, then glitch role cycle */}
       <div
         ref={nightRef}
         className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center"
       >
+        {/* 60% — same name */}
         <span className="mb-6 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.35em] text-[#c8ff00]">
-          ◑ By night
+          ◑ During the night
         </span>
-        <h2 className="max-w-[16ch] font-[family-name:var(--font-display)] text-[10vw] leading-[0.95] tracking-tight text-[#ededed] md:text-[6vw]">
-          {NIGHT_TITLE}
+        <h2 className="font-[family-name:var(--font-display)] leading-[0.9] tracking-tight text-[#ededed]">
+          <span className="block text-[13vw] md:text-[8.5vw]">Niyaz Ahamad</span>
+          <span className="block text-[13vw] md:text-[8.5vw]">Herkal</span>
         </h2>
-        <p className="mt-6 font-[family-name:var(--font-mono)] text-sm text-[#888]">
-          {NIGHT_SUB}
+
+        {/* 20% — glitchy cycling night roles (light base for the dark bg) */}
+        <div
+          className={`glitch-word mt-8 ${cycleGlitch ? "is-glitching" : ""}`}
+          aria-live="polite"
+        >
+          <span
+            className="glitch-word__layer glitch-word__base font-[family-name:var(--font-mono)] text-2xl font-bold tracking-tight text-[#ededed] md:text-4xl"
+            style={{ color: "#ededed" }}
+          >
+            {nightCyclePhrases[phrase % nightCyclePhrases.length]}
+          </span>
+          <span className="glitch-word__layer glitch-word__ghost glitch-word__ghost--cyan font-[family-name:var(--font-mono)] text-2xl font-bold tracking-tight md:text-4xl">
+            {nightCyclePhrases[phrase % nightCyclePhrases.length]}
+          </span>
+          <span className="glitch-word__layer glitch-word__ghost glitch-word__ghost--lime font-[family-name:var(--font-mono)] text-2xl font-bold tracking-tight md:text-4xl">
+            {nightCyclePhrases[phrase % nightCyclePhrases.length]}
+          </span>
+        </div>
+
+        {/* 20% — night line */}
+        <p className="mt-8 max-w-[42ch] font-[family-name:var(--font-body)] text-sm text-[#888] md:text-base">
+          By night — off the clock, always building something new.
         </p>
       </div>
     </section>
