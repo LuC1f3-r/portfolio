@@ -16,7 +16,6 @@ const navLinks = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -31,8 +30,6 @@ export default function Navbar() {
         setHidden(false);
       }
 
-      // Add background when scrolled
-      setScrolled(currentScrollY > 50);
       setLastScrollY(currentScrollY);
     };
 
@@ -56,13 +53,11 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: hidden ? -100 : 0 }}
         transition={{ duration: 0.3 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-[#1a1a1a]"
-            : "bg-transparent"
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 bg-transparent"
       >
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        {/* mix-blend-difference makes white auto-invert: dark over the white
+            day-hero, light over the dark sections — always readable. */}
+        <div className="max-w-7xl mx-auto px-6 py-4 mix-blend-difference">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link
@@ -72,7 +67,7 @@ export default function Navbar() {
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="text-xl font-bold text-[#ededed] font-[family-name:var(--font-mono)] tracking-tight"
+                className="text-xl font-bold text-white font-[family-name:var(--font-mono)] tracking-tight"
               >
                 Niyaz · LuC1f3-r
               </motion.div>
@@ -85,10 +80,9 @@ export default function Navbar() {
                   key={href}
                   href={href}
                   onClick={(e) => handleNavClick(e, href)}
-                  className="relative px-4 py-2 text-sm text-[#888] hover:text-[#c8ff00] transition-colors duration-200 group font-[family-name:var(--font-mono)]"
+                  className="relative px-4 py-2 text-sm text-white/80 hover:text-white transition-opacity duration-200 font-[family-name:var(--font-mono)]"
                 >
-                  <span className="relative z-10">{label}</span>
-                  <div className="absolute inset-0 bg-[#1a1a1a] rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  {label}
                 </Link>
               ))}
             </div>
@@ -96,7 +90,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-[#888] hover:text-[#c8ff00] transition-colors"
+              className="md:hidden p-2 text-white"
               aria-label="Toggle menu"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
