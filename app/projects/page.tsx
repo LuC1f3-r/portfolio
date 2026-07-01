@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink, Github } from "lucide-react";
@@ -17,7 +16,6 @@ const projects = [
       "A framework that fuses data extraction and analytical capabilities into one powerful pipeline. Built for scalability and real-time processing.",
     link: "https://github.com/LuC1f3-r/Serpico-TK",
     tags: ["Python", "Data Pipeline", "Analytics"],
-    featured: true,
   },
   {
     name: "URL Shortener",
@@ -25,7 +23,6 @@ const projects = [
       "Fast and scalable URL shortener with tracking and analytics — built for heavy traffic scenarios with Redis caching.",
     link: "https://github.com/LuC1f3-r/url-shortener",
     tags: ["Node.js", "Redis", "PostgreSQL"],
-    featured: true,
   },
   {
     name: "Self Driving Car",
@@ -33,44 +30,85 @@ const projects = [
       "Browser-based JS simulation with neural networks that mimic autonomous driving logic using machine learning.",
     link: "https://github.com/LuC1f3-r/Self-Driving-Car",
     tags: ["JavaScript", "ML", "Canvas"],
-    featured: false,
   },
 ];
 
+
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
+  const caseStudyRef = useRef<HTMLDivElement>(null);
+  const rowsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!cardsRef.current) return;
+    const section = sectionRef.current;
+    if (!section) return;
 
-    const cards = cardsRef.current.querySelectorAll(".project-card");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (caseStudyRef.current) {
+        const els = caseStudyRef.current.querySelectorAll<HTMLElement>(
+          ".reveal-item"
+        );
+        els.forEach((el) => gsap.set(el, { y: 0, opacity: 1 }));
+      }
+      if (rowsRef.current) {
+        const rows = rowsRef.current.querySelectorAll<HTMLElement>(".project-row");
+        rows.forEach((row) => gsap.set(row, { y: 0, opacity: 1 }));
+      }
+      return;
+    }
 
-    cards.forEach((card, i) => {
-      gsap.fromTo(
-        card,
-        { 
-          y: 100, 
-          opacity: 0,
-          rotateX: -10,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          rotateX: 0,
-          duration: 0.8,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-          delay: i * 0.1,
-        }
-      );
-    });
+    const ctx = gsap.context(() => {
+      // Case study block — stagger each reveal-item in
+      if (caseStudyRef.current) {
+        const els = caseStudyRef.current.querySelectorAll<HTMLElement>(
+          ".reveal-item"
+        );
+        els.forEach((el, i) => {
+          gsap.fromTo(
+            el,
+            { y: 40, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.75,
+              ease: "power3.out",
+              delay: i * 0.1,
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        });
+      }
+
+      // Project rows stagger
+      if (rowsRef.current) {
+        const rows = rowsRef.current.querySelectorAll<HTMLElement>(".project-row");
+        rows.forEach((row, i) => {
+          gsap.fromTo(
+            row,
+            { y: 48, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.8,
+              ease: "power3.out",
+              delay: i * 0.1,
+              scrollTrigger: {
+                trigger: row,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        });
+      }
+    }, section);
 
     return () => {
+      ctx.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
@@ -78,132 +116,163 @@ export default function Projects() {
   return (
     <main
       ref={sectionRef}
-      className="min-h-screen w-full py-24 px-6 bg-gradient-to-br from-black via-zinc-900 to-purple-950/30 flex flex-col items-center overflow-hidden"
+      className="w-full py-24 px-6 bg-[#0a0a0a] overflow-hidden"
     >
-      {/* Section indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="mb-6"
-      >
-        <span className="text-xs font-mono text-purple-500 tracking-widest uppercase">
-          // 04. Projects
-        </span>
-      </motion.div>
+      <div className="max-w-[1400px] mx-auto">
 
-      {/* Title */}
-      <motion.h2
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-6 text-center"
-      >
-        Featured Work
-      </motion.h2>
+        {/* Mono kicker */}
+        <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-[#888] mb-16">
+          Selected Work
+        </p>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.2 }}
-        className="text-zinc-400 text-lg text-center max-w-2xl mb-16"
-      >
-        Projects crafted with passion, focused on performance, scalability, and creativity.
-      </motion.p>
+        {/* ── Featured Case Study ── */}
+        <div ref={caseStudyRef} className="mb-24">
 
-      {/* Projects Grid */}
-      <div
-        ref={cardsRef}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl w-full"
-      >
-        {projects.map((project, idx) => (
-          <div
-            key={idx}
-            className="project-card group relative bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl p-8 transition-all duration-500 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10"
-            style={{ perspective: "1000px" }}
-          >
-            {/* Featured badge */}
-            {project.featured && (
-              <div className="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-xs font-bold text-white shadow-lg">
-                Featured
-              </div>
-            )}
+          {/* Case study label */}
+          <p className="reveal-item font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-[#c8ff00] mb-4">
+            Case Study · CodeHaste
+          </p>
 
-            {/* Gradient overlay on hover */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 via-transparent to-pink-500/5" />
-            </div>
+          {/* Big display headline */}
+          <h2 className="reveal-item font-[family-name:var(--font-display)] text-[#ededed] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.0] tracking-tight mb-3 max-w-[20ch]">
+            B2C Services Platform
+          </h2>
 
-            {/* Content */}
-            <div className="relative z-10">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-2xl font-bold text-white group-hover:text-purple-400 transition-colors">
+          {/* Sub-label */}
+          <p className="reveal-item font-[family-name:var(--font-mono)] text-[13px] text-[#888] tracking-wide mb-12">
+            Lead Backend Engineer · Node.js · NestJS · AWS · Kafka
+          </p>
+
+          {/* Divider */}
+          <div className="reveal-item w-full h-px bg-[#222] mb-12" />
+
+          {/* Achievement bullets */}
+          <ul className="space-y-10">
+            {/* Booking module */}
+            <li className="reveal-item flex gap-6 items-start">
+              <span
+                className="font-[family-name:var(--font-mono)] text-[#c8ff00] text-2xl sm:text-3xl font-bold leading-none shrink-0 pt-1"
+                aria-hidden
+              >
+                10k+
+              </span>
+              <p className="font-[family-name:var(--font-body)] text-[#888] text-base sm:text-lg leading-[1.75]">
+                Architected a multi-job booking module (overlapping/standalone
+                appointment scheduling, Google-Calendar-style logic) scaling to{" "}
+                <strong className="text-[#c8ff00] font-bold">
+                  10,000+ booking transactions/day
+                </strong>
+                , eliminating manual job-entry workflows.
+              </p>
+            </li>
+
+            {/* Auth */}
+            <li className="reveal-item flex gap-6 items-start">
+              <span
+                className="font-[family-name:var(--font-mono)] text-[#c8ff00] text-2xl sm:text-3xl font-bold leading-none shrink-0 pt-1"
+                aria-hidden
+              >
+                −60%
+              </span>
+              <p className="font-[family-name:var(--font-body)] text-[#888] text-base sm:text-lg leading-[1.75]">
+                Rebuilt authentication on{" "}
+                <strong className="text-[#ededed] font-semibold">AWS Cognito</strong>{" "}
+                with JWT-backed persistent token refresh —{" "}
+                <strong className="text-[#c8ff00] font-bold">60% fewer</strong>{" "}
+                redundant auth transactions (~10k/day → ~4k/day) and no more
+                unwanted session logouts.
+              </p>
+            </li>
+
+            {/* Kafka migration */}
+            <li className="reveal-item flex gap-6 items-start">
+              <span
+                className="font-[family-name:var(--font-mono)] text-[#c8ff00] text-2xl sm:text-3xl font-bold leading-none shrink-0 pt-1"
+                aria-hidden
+              >
+                −20%
+              </span>
+              <p className="font-[family-name:var(--font-body)] text-[#888] text-base sm:text-lg leading-[1.75]">
+                Migrated a monolith to{" "}
+                <strong className="text-[#ededed] font-semibold">
+                  message-based microservices (Kafka + AWS SQS)
+                </strong>
+                , decoupling services and cutting inter-service processing
+                latency{" "}
+                <strong className="text-[#c8ff00] font-bold">20%</strong>.
+              </p>
+            </li>
+          </ul>
+        </div>
+
+        {/* ── Editorial section label ── */}
+        <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-[#888] mb-8">
+          Open Source
+        </p>
+
+        {/* Divider */}
+        <div className="w-full h-px bg-[#222] mb-0" />
+
+        {/* ── Project rows ── */}
+        <div ref={rowsRef}>
+          {projects.map((project, idx) => (
+            <div
+              key={idx}
+              className="project-row group border-b border-[#222] py-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 transition-colors duration-200 hover:border-[#444]"
+            >
+              {/* Left — name + tags */}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-[family-name:var(--font-display)] text-[#ededed] text-2xl sm:text-3xl md:text-4xl font-bold leading-tight tracking-tight mb-3 group-hover:text-[#c8ff00] transition-colors duration-200">
                   {project.name}
                 </h3>
+                <div className="flex flex-wrap gap-2">
+                  {project.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-[#555] border border-[#2a2a2a] px-2.5 py-1"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Center — description */}
+              <p className="font-[family-name:var(--font-body)] text-[#888] text-sm sm:text-base leading-[1.75] max-w-[44ch] sm:mx-8 flex-shrink-0">
+                {project.description}
+              </p>
+
+              {/* Right — link */}
+              <div className="flex items-start gap-4 shrink-0">
                 <a
                   href={project.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 text-zinc-500 hover:text-purple-400 transition-colors"
                   aria-label={`View ${project.name} on GitHub`}
+                  className="inline-flex items-center gap-2 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-[#555] border border-[#2a2a2a] px-4 py-2.5 transition-colors duration-200 hover:text-[#c8ff00] hover:border-[#c8ff00]"
                 >
-                  <Github size={20} />
+                  <Github size={13} />
+                  View Project
                 </a>
               </div>
-
-              {/* Description */}
-              <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                {project.description}
-              </p>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {project.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 text-xs font-mono text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Link */}
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-medium text-purple-400 hover:text-pink-400 transition-colors group/link"
-              >
-                <span>View Project</span>
-                <ExternalLink
-                  size={14}
-                  className="transition-transform group-hover/link:translate-x-1"
-                />
-              </a>
             </div>
+          ))}
+        </div>
 
-            {/* Bottom glow */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
-          </div>
-        ))}
+        {/* ── View all on GitHub ── */}
+        <div className="mt-12 flex items-center justify-between">
+          <a
+            href="https://github.com/LuC1f3-r"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.18em] text-[#888] transition-colors duration-200 hover:text-[#c8ff00]"
+          >
+            <span>View all on GitHub</span>
+            <ExternalLink size={13} />
+          </a>
+        </div>
+
       </div>
-
-      {/* View more link */}
-      <motion.a
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        href="https://github.com/LuC1f3-r"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-12 inline-flex items-center gap-2 text-zinc-400 hover:text-purple-400 transition-colors"
-      >
-        <span className="text-sm font-mono">View all on GitHub</span>
-        <ExternalLink size={14} />
-      </motion.a>
     </main>
   );
 }
