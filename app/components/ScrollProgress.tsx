@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const sections = [
@@ -8,9 +8,8 @@ const sections = [
   { id: "about", label: "02" },
   { id: "experience", label: "03" },
   { id: "projects", label: "04" },
-  { id: "services", label: "05" },
-  { id: "techstack", label: "06" },
-  { id: "contacts", label: "07" },
+  { id: "techstack", label: "05" },
+  { id: "contacts", label: "06" },
 ];
 
 export default function ScrollProgress() {
@@ -64,11 +63,11 @@ export default function ScrollProgress() {
       className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col items-center gap-1"
     >
       {/* Progress line background */}
-      <div className="absolute right-[11px] top-0 w-[2px] h-full bg-zinc-800 rounded-full" />
-      
+      <div className="absolute right-[11px] top-0 w-[2px] h-full bg-[#1a1a1a] rounded-full" />
+
       {/* Progress line fill */}
       <motion.div
-        className="absolute right-[11px] top-0 w-[2px] bg-gradient-to-b from-purple-500 to-pink-500 rounded-full origin-top"
+        className="absolute right-[11px] top-0 w-[2px] bg-[#c8ff00] rounded-full origin-top"
         style={{ height: `${progress}%` }}
       />
 
@@ -87,17 +86,17 @@ export default function ScrollProgress() {
             <motion.div
               className={`w-6 h-6 rounded-full border-2 transition-all duration-300 flex items-center justify-center ${
                 isActive
-                  ? "border-purple-500 bg-purple-500"
+                  ? "border-[#c8ff00] bg-[#c8ff00]"
                   : isPast
-                  ? "border-purple-500/50 bg-purple-500/20"
-                  : "border-zinc-600 bg-zinc-900"
+                  ? "border-[#c8ff00]/40 bg-[#c8ff00]/10"
+                  : "border-[#333] bg-[#0a0a0a]"
               }`}
               whileHover={{ scale: 1.2 }}
             >
               {isActive && (
                 <motion.div
                   layoutId="activeDot"
-                  className="w-2 h-2 bg-white rounded-full"
+                  className="w-2 h-2 bg-black rounded-full"
                 />
               )}
             </motion.div>
@@ -106,7 +105,7 @@ export default function ScrollProgress() {
             <motion.span
               initial={{ opacity: 0, x: 10 }}
               whileHover={{ opacity: 1, x: 0 }}
-              className="absolute right-10 text-xs font-mono text-zinc-400 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-10 text-xs font-[family-name:var(--font-mono)] text-[#888] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity"
             >
               {label} — {id.charAt(0).toUpperCase() + id.slice(1)}
             </motion.span>
@@ -115,9 +114,9 @@ export default function ScrollProgress() {
       })}
 
       {/* Current section indicator */}
-      <div className="mt-4 text-xs font-mono text-zinc-500">
+      <div className="mt-4 text-xs font-[family-name:var(--font-mono)] text-[#888]">
         {String(sections.findIndex((s) => s.id === activeSection) + 1).padStart(2, "0")}
-        <span className="text-zinc-700">/</span>
+        <span className="text-[#333]">/</span>
         {String(sections.length).padStart(2, "0")}
       </div>
     </motion.div>

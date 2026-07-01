@@ -10,7 +10,6 @@ const navLinks = [
   { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
-  { href: "#services", label: "Services" },
   { href: "#techstack", label: "Tech" },
   { href: "#contacts", label: "Contact" },
 ];
@@ -24,14 +23,14 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Hide/show on scroll direction
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setHidden(true);
       } else {
         setHidden(false);
       }
-      
+
       // Add background when scrolled
       setScrolled(currentScrollY > 50);
       setLastScrollY(currentScrollY);
@@ -59,7 +58,7 @@ export default function Navbar() {
         transition={{ duration: 0.3 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-black/80 backdrop-blur-xl border-b border-white/5"
+            ? "bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-[#1a1a1a]"
             : "bg-transparent"
         }`}
       >
@@ -73,13 +72,10 @@ export default function Navbar() {
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500"
+                className="text-xl font-bold text-[#ededed] font-[family-name:var(--font-mono)] tracking-tight"
               >
-                LuC1f3-r
+                Niyaz · LuC1f3-r
               </motion.div>
-              <span className="hidden sm:block text-xs text-zinc-500 font-mono">
-                v2.0
-              </span>
             </Link>
 
             {/* Desktop Links */}
@@ -89,13 +85,10 @@ export default function Navbar() {
                   key={href}
                   href={href}
                   onClick={(e) => handleNavClick(e, href)}
-                  className="relative px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors group"
+                  className="relative px-4 py-2 text-sm text-[#888] hover:text-[#c8ff00] transition-colors duration-200 group font-[family-name:var(--font-mono)]"
                 >
                   <span className="relative z-10">{label}</span>
-                  <motion.div
-                    className="absolute inset-0 bg-purple-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    layoutId="navHover"
-                  />
+                  <div className="absolute inset-0 bg-[#1a1a1a] rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 </Link>
               ))}
             </div>
@@ -103,7 +96,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-zinc-400 hover:text-white transition-colors"
+              className="md:hidden p-2 text-[#888] hover:text-[#c8ff00] transition-colors"
               aria-label="Toggle menu"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -136,7 +129,7 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-zinc-950 border-l border-purple-500/20 p-8 pt-24"
+              className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-[#0a0a0a] border-l border-[#1a1a1a] p-8 pt-24"
             >
               <nav className="flex flex-col gap-4">
                 {navLinks.map(({ href, label }, index) => (
@@ -144,14 +137,14 @@ export default function Navbar() {
                     key={href}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.07 }}
                   >
                     <Link
                       href={href}
                       onClick={(e) => handleNavClick(e, href)}
-                      className="block py-3 text-xl text-zinc-300 hover:text-purple-400 transition-colors border-b border-zinc-800"
+                      className="block py-3 text-xl text-[#ededed] hover:text-[#c8ff00] transition-colors border-b border-[#1a1a1a]"
                     >
-                      <span className="text-purple-500/50 font-mono text-sm mr-3">
+                      <span className="text-[#c8ff00]/40 font-[family-name:var(--font-mono)] text-sm mr-3">
                         0{index + 1}
                       </span>
                       {label}
@@ -162,13 +155,13 @@ export default function Navbar() {
 
               {/* Social links in mobile menu */}
               <div className="absolute bottom-8 left-8 right-8">
-                <p className="text-xs text-zinc-600 font-mono mb-3">CONNECT</p>
+                <p className="text-xs text-[#888] font-[family-name:var(--font-mono)] mb-3">CONNECT</p>
                 <div className="flex gap-4">
                   <a
                     href="https://github.com/LuC1f3-r"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-400 hover:text-purple-400 transition-colors"
+                    className="text-[#888] hover:text-[#c8ff00] transition-colors font-[family-name:var(--font-mono)] text-sm"
                   >
                     GitHub
                   </a>
@@ -176,7 +169,7 @@ export default function Navbar() {
                     href="https://linkedin.com/in/niyazherkal"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-400 hover:text-purple-400 transition-colors"
+                    className="text-[#888] hover:text-[#c8ff00] transition-colors font-[family-name:var(--font-mono)] text-sm"
                   >
                     LinkedIn
                   </a>
