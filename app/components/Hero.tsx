@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   FaInstagram,
   FaLinkedin,
@@ -8,6 +10,10 @@ import {
   FaTwitter,
   FaGithub,
 } from "react-icons/fa";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const socialLinks = [
   { icon: FaInstagram, href: "https://www.instagram.com/niy4z_ahmed/", label: "Instagram" },
@@ -35,13 +41,15 @@ const NAME_CLASS =
   "block text-[15vw] md:text-[10.5vw] font-extrabold leading-[0.86] tracking-[-0.02em]";
 const BAND_CLASS =
   "font-[family-name:var(--font-mono)] text-3xl font-bold tracking-tight md:text-5xl";
+const KICKER_CLASS =
+  "absolute left-6 top-28 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.35em]";
 
 export default function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
   const dayRef = useRef<HTMLDivElement>(null);
   const nightRef = useRef<HTMLDivElement>(null);
 
   const [reduced, setReduced] = useState(false);
-  const [night, setNight] = useState(false);
   const [phrase, setPhrase] = useState(0);
   const [cycleGlitch, setCycleGlitch] = useState(false);
 
@@ -57,7 +65,6 @@ export default function Hero() {
     let settle: ReturnType<typeof setTimeout>;
     const tick = setInterval(() => {
       setCycleGlitch(true);
-      // 15 keeps the two bands aligned and the counter bounded.
       swap = setTimeout(() => setPhrase((p) => (p + 1) % 15), 170);
       settle = setTimeout(() => setCycleGlitch(false), 360);
     }, 2200);
@@ -68,17 +75,38 @@ export default function Hero() {
     };
   }, [reduced]);
 
-  // Day -> night as a TIMED transition (not a scroll-scrub): once you scroll
-  // past a small threshold, the whole hero crossfades white -> black. Fully
-  // reversible, no pinning, no content sliding.
+  // First scroll PINS the hero and switches light -> dark in place (a clean
+  // crossfade, no content sliding). Once the switch completes the pin releases
+  // and normal scrolling resumes into the dark site.
   useEffect(() => {
-    if (reduced) return;
-    const onScroll = () => {
-      setNight(window.scrollY > window.innerHeight * 0.15);
+    const section = sectionRef.current;
+    if (!section || reduced) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(section, { backgroundColor: "#f4f4f0" });
+      gsap.set(dayRef.current, { opacity: 1 });
+      gsap.set(nightRef.current, { opacity: 0 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "+=75%",
+          scrub: 0.6,
+          pin: true,
+          pinSpacing: true,
+        },
+      });
+
+      tl.to(section, { backgroundColor: "#0a0a0a", ease: "none" }, 0)
+        .to(dayRef.current, { opacity: 0, ease: "none" }, 0)
+        .to(nightRef.current, { opacity: 1, ease: "none" }, 0.4);
+    }, section);
+
+    return () => {
+      ctx.revert();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
   }, [reduced]);
 
   const handleViewWork = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -110,112 +138,110 @@ export default function Hero() {
     );
   }
 
-  // --- Full experience: day crossfades to night via timed transition. ---
+  // --- Full experience: pinned day -> night crossfade. ---
   return (
     <section
-      className="relative min-h-[100dvh] w-full overflow-hidden px-6 transition-colors duration-[900ms] ease-[cubic-bezier(0.76,0,0.24,1)]"
-      style={{ backgroundColor: night ? "#0a0a0a" : "#f4f4f0" }}
+      ref={sectionRef}
+      className="relative min-h-[100dvh] w-full overflow-hidden px-6"
+      style={{ backgroundColor: "#f4f4f0" }}
     >
       {/* DAY */}
-      <div
-        ref={dayRef}
-        className={`absolute inset-0 z-10 flex flex-col items-center justify-center text-center transition-opacity duration-[900ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
-          night ? "opacity-0 pointer-events-none" : "opacity-100"
-        }`}
-      >
-        <span className="mb-6 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.35em] text-[#888]">
-          ◐ By day
-        </span>
-        <h1 className="font-[family-name:var(--font-display)] tracking-tight text-[#111]">
-          <span className={NAME_CLASS}>Niyaz Ahamad</span>
-          <span className={NAME_CLASS}>
-            <span className="text-[#ff5c2b]">Herkal</span>
-          </span>
-        </h1>
+      <div ref={dayRef} className="absolute inset-0 z-10">
+        {/* By day — top-left, above the name */}
+        <span className={`${KICKER_CLASS} text-[#888]`}>◐ By day</span>
 
-        {/* Glitchy cycling roles (centered) */}
-        <div
-          className={`glitch-word mx-auto mt-8 w-fit ${cycleGlitch ? "is-glitching" : ""}`}
-          aria-live="polite"
-        >
-          <span className={`glitch-word__layer glitch-word__base ${BAND_CLASS}`}>
-            {dayCyclePhrases[phrase % dayCyclePhrases.length]}
-          </span>
-          <span className={`glitch-word__layer glitch-word__ghost glitch-word__ghost--cyan ${BAND_CLASS}`}>
-            {dayCyclePhrases[phrase % dayCyclePhrases.length]}
-          </span>
-          <span className={`glitch-word__layer glitch-word__ghost glitch-word__ghost--lime ${BAND_CLASS}`}>
-            {dayCyclePhrases[phrase % dayCyclePhrases.length]}
-          </span>
+        <div className="flex h-full w-full flex-col items-center justify-center text-center">
+          <h1 className="font-[family-name:var(--font-display)] tracking-tight text-[#111]">
+            <span className={NAME_CLASS}>Niyaz Ahamad</span>
+            <span className={NAME_CLASS}>
+              <span className="text-[#ff5c2b]">Herkal</span>
+            </span>
+          </h1>
+
+          {/* Glitchy cycling roles — centered */}
+          <div
+            className={`glitch-word mt-8 w-full justify-items-center ${
+              cycleGlitch ? "is-glitching" : ""
+            }`}
+            aria-live="polite"
+          >
+            <span className={`glitch-word__layer glitch-word__base ${BAND_CLASS}`}>
+              {dayCyclePhrases[phrase % dayCyclePhrases.length]}
+            </span>
+            <span className={`glitch-word__layer glitch-word__ghost glitch-word__ghost--cyan ${BAND_CLASS}`}>
+              {dayCyclePhrases[phrase % dayCyclePhrases.length]}
+            </span>
+            <span className={`glitch-word__layer glitch-word__ghost glitch-word__ghost--lime ${BAND_CLASS}`}>
+              {dayCyclePhrases[phrase % dayCyclePhrases.length]}
+            </span>
+          </div>
+
+          <p className="mt-8 max-w-[42ch] font-[family-name:var(--font-body)] text-sm text-[#555] md:text-base">
+            By day — I ship scalable, event-driven backends.
+          </p>
+
+          <div className="mt-8 flex items-center gap-6">
+            {socialLinks.map(({ icon: Icon, href, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="text-lg text-[#555] transition-colors duration-300 hover:text-[#111]"
+              >
+                <Icon />
+              </a>
+            ))}
+          </div>
+
+          <a
+            href="#projects"
+            onClick={handleViewWork}
+            className="mt-10 inline-flex items-center gap-2 bg-[#c8ff00] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.18em] text-[#0a0a0a] transition-transform duration-300 hover:-translate-y-0.5"
+          >
+            View my work
+          </a>
         </div>
-
-        <p className="mt-8 max-w-[42ch] font-[family-name:var(--font-body)] text-sm text-[#555] md:text-base">
-          By day — I ship scalable, event-driven backends.
-        </p>
-
-        <div className="mt-8 flex items-center gap-6">
-          {socialLinks.map(({ icon: Icon, href, label }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className="text-lg text-[#555] transition-colors duration-300 hover:text-[#111]"
-            >
-              <Icon />
-            </a>
-          ))}
-        </div>
-
-        <a
-          href="#projects"
-          onClick={handleViewWork}
-          className="mt-10 inline-flex items-center gap-2 bg-[#c8ff00] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.18em] text-[#0a0a0a] transition-transform duration-300 hover:-translate-y-0.5"
-        >
-          View my work
-        </a>
       </div>
 
-      {/* NIGHT — mirrors day: same name, then glitch role cycle */}
-      <div
-        ref={nightRef}
-        className={`absolute inset-0 z-20 flex flex-col items-center justify-center text-center transition-opacity duration-[900ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
-          night ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <span className="mb-6 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.35em] text-[#c8ff00]">
-          ◑ During the night
-        </span>
-        <h2 className="font-[family-name:var(--font-display)] tracking-tight text-[#ededed]">
-          <span className={NAME_CLASS}>Niyaz Ahamad</span>
-          <span className={NAME_CLASS}>
-            <span className="text-[#c8ff00]">Herkal</span>
-          </span>
-        </h2>
+      {/* NIGHT — mirrors day */}
+      <div ref={nightRef} className="absolute inset-0 z-20" style={{ opacity: 0 }}>
+        <span className={`${KICKER_CLASS} text-[#c8ff00]`}>◑ During the night</span>
 
-        {/* Glitchy cycling night roles (light base for the dark bg) */}
-        <div
-          className={`glitch-word mx-auto mt-8 w-fit ${cycleGlitch ? "is-glitching" : ""}`}
-          aria-live="polite"
-        >
-          <span
-            className={`glitch-word__layer glitch-word__base ${BAND_CLASS}`}
-            style={{ color: "#ededed" }}
+        <div className="flex h-full w-full flex-col items-center justify-center text-center">
+          <h2 className="font-[family-name:var(--font-display)] tracking-tight text-[#ededed]">
+            <span className={NAME_CLASS}>Niyaz Ahamad</span>
+            <span className={NAME_CLASS}>
+              <span className="text-[#c8ff00]">Herkal</span>
+            </span>
+          </h2>
+
+          {/* Glitchy cycling night roles — centered, light base for dark bg */}
+          <div
+            className={`glitch-word mt-8 w-full justify-items-center ${
+              cycleGlitch ? "is-glitching" : ""
+            }`}
+            aria-live="polite"
           >
-            {nightCyclePhrases[phrase % nightCyclePhrases.length]}
-          </span>
-          <span className={`glitch-word__layer glitch-word__ghost glitch-word__ghost--cyan ${BAND_CLASS}`}>
-            {nightCyclePhrases[phrase % nightCyclePhrases.length]}
-          </span>
-          <span className={`glitch-word__layer glitch-word__ghost glitch-word__ghost--lime ${BAND_CLASS}`}>
-            {nightCyclePhrases[phrase % nightCyclePhrases.length]}
-          </span>
-        </div>
+            <span
+              className={`glitch-word__layer glitch-word__base ${BAND_CLASS}`}
+              style={{ color: "#ededed" }}
+            >
+              {nightCyclePhrases[phrase % nightCyclePhrases.length]}
+            </span>
+            <span className={`glitch-word__layer glitch-word__ghost glitch-word__ghost--cyan ${BAND_CLASS}`}>
+              {nightCyclePhrases[phrase % nightCyclePhrases.length]}
+            </span>
+            <span className={`glitch-word__layer glitch-word__ghost glitch-word__ghost--lime ${BAND_CLASS}`}>
+              {nightCyclePhrases[phrase % nightCyclePhrases.length]}
+            </span>
+          </div>
 
-        <p className="mt-8 max-w-[42ch] font-[family-name:var(--font-body)] text-sm text-[#888] md:text-base">
-          By night — off the clock, always building something new.
-        </p>
+          <p className="mt-8 max-w-[42ch] font-[family-name:var(--font-body)] text-sm text-[#888] md:text-base">
+            By night — off the clock, always building something new.
+          </p>
+        </div>
       </div>
     </section>
   );
