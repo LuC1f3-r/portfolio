@@ -1,27 +1,27 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   SiJavascript,
   SiTypescript,
+  SiPython,
   SiHtml5,
   SiCss3,
-  SiPython,
   SiReact,
   SiNextdotjs,
   SiNestjs,
   SiNodedotjs,
   SiFlask,
+  SiTailwindcss,
   SiDocker,
   SiPostgresql,
   SiMongodb,
+  SiRedis,
+  SiApachekafka,
   SiGit,
   SiLinux,
-  SiRedis,
-  SiTailwindcss,
   SiAmazon,
 } from "react-icons/si";
 
@@ -29,116 +29,134 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const techCategories = [
+type IconComponent = React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>;
+
+type TechItem = { icon: IconComponent | null; name: string };
+
+const techCategories: { title: string; items: TechItem[] }[] = [
   {
     title: "Languages",
     items: [
-      { icon: SiJavascript, name: "JavaScript", color: "#F7DF1E" },
-      { icon: SiTypescript, name: "TypeScript", color: "#3178C6" },
-      { icon: SiPython, name: "Python", color: "#3776AB" },
-      { icon: SiHtml5, name: "HTML5", color: "#E34F26" },
-      { icon: SiCss3, name: "CSS3", color: "#1572B6" },
+      { icon: SiJavascript, name: "JavaScript" },
+      { icon: SiTypescript, name: "TypeScript" },
+      { icon: SiPython, name: "Python" },
+      { icon: SiHtml5, name: "HTML5" },
+      { icon: SiCss3, name: "CSS3" },
     ],
   },
   {
     title: "Frameworks",
     items: [
-      { icon: SiReact, name: "React", color: "#61DAFB" },
-      { icon: SiNextdotjs, name: "Next.js", color: "#ffffff" },
-      { icon: SiNestjs, name: "NestJS", color: "#E0234E" },
-      { icon: SiNodedotjs, name: "Node.js", color: "#339933" },
-      { icon: SiFlask, name: "Flask", color: "#ffffff" },
-      { icon: SiTailwindcss, name: "Tailwind", color: "#06B6D4" },
+      { icon: SiReact, name: "React" },
+      { icon: SiNextdotjs, name: "Next.js" },
+      { icon: SiNestjs, name: "NestJS" },
+      { icon: SiNodedotjs, name: "Node.js" },
+      { icon: SiFlask, name: "Flask" },
+      { icon: SiTailwindcss, name: "Tailwind" },
     ],
   },
   {
     title: "Infrastructure",
     items: [
-      { icon: SiDocker, name: "Docker", color: "#2496ED" },
-      { icon: SiPostgresql, name: "PostgreSQL", color: "#4169E1" },
-      { icon: SiMongodb, name: "MongoDB", color: "#47A248" },
-      { icon: SiRedis, name: "Redis", color: "#DC382D" },
-      { icon: SiGit, name: "Git", color: "#F05032" },
-      { icon: SiLinux, name: "Linux", color: "#FCC624" },
-      { icon: SiAmazon, name: "AWS", color: "#FF9900" },
+      { icon: SiDocker, name: "Docker" },
+      { icon: SiPostgresql, name: "PostgreSQL" },
+      { icon: SiMongodb, name: "MongoDB" },
+      { icon: SiRedis, name: "Redis" },
+      { icon: SiApachekafka, name: "Kafka" },
+      { icon: null, name: "AWS SQS" },
+      { icon: SiGit, name: "Git" },
+      { icon: SiLinux, name: "Linux" },
+      { icon: SiAmazon, name: "AWS" },
     ],
   },
 ];
 
-const StarsBackground = () => {
-  const [stars, setStars] = useState<
-    { size: number; left: number; top: number; duration: number }[]
-  >([]);
+function TechEntry({ item }: { item: TechItem }) {
+  const entryRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setStars(
-      Array.from({ length: 60 }).map(() => ({
-        size: Math.random() * 2 + 0.5,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        duration: Math.random() * 3 + 2,
-      }))
-    );
-  }, []);
+  const handleMouseEnter = () => {
+    const el = entryRef.current;
+    if (!el) return;
+    el.querySelectorAll<HTMLElement>(".tech-icon, .tech-label").forEach((node) => {
+      node.style.color = "#c8ff00";
+    });
+  };
+
+  const handleMouseLeave = () => {
+    const el = entryRef.current;
+    if (!el) return;
+    el.querySelectorAll<HTMLElement>(".tech-icon, .tech-label").forEach((node) => {
+      node.style.color = "#888";
+    });
+  };
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-      {stars.map((star, i) => (
-        <motion.div
-          key={i}
-          className="absolute bg-white rounded-full"
-          style={{
-            width: `${star.size}px`,
-            height: `${star.size}px`,
-            left: `${star.left}%`,
-            top: `${star.top}%`,
-            filter: "drop-shadow(0 0 4px #fff)",
-          }}
-          animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{
-            duration: star.duration,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+    <div
+      ref={entryRef}
+      className="tech-entry flex items-center gap-2 cursor-default"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {item.icon !== null && (
+        <item.icon
+          size={13}
+          className="flex-shrink-0 transition-colors duration-200 tech-icon"
+          style={{ color: "#888" }}
         />
-      ))}
+      )}
+      <span
+        className="tech-label text-sm leading-none transition-colors duration-200"
+        style={{
+          fontFamily: "var(--font-mono)",
+          color: "#888",
+        }}
+      >
+        {item.name}
+      </span>
     </div>
   );
-};
+}
 
-const TechStack = () => {
+export default function TechStack() {
   const sectionRef = useRef<HTMLElement>(null);
-  const categoriesRef = useRef<HTMLDivElement>(null);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (!categoriesRef.current) return;
-
-    const categories = categoriesRef.current.querySelectorAll(".tech-category");
-
-    categories.forEach((category, i) => {
-      const items = category.querySelectorAll(".tech-item");
-      
-      gsap.fromTo(
-        items,
-        { y: 40, opacity: 0, scale: 0.9 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.5,
-          stagger: 0.05,
-          ease: "back.out(1.4)",
-          scrollTrigger: {
-            trigger: category,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-          delay: i * 0.2,
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      rowRefs.current.forEach((row) => {
+        if (row) {
+          const items = row.querySelectorAll<HTMLElement>(".tech-entry");
+          gsap.set(items, { y: 0, opacity: 1 });
         }
-      );
-    });
+      });
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      rowRefs.current.forEach((row) => {
+        if (!row) return;
+        const items = row.querySelectorAll<HTMLElement>(".tech-entry");
+        gsap.fromTo(
+          items,
+          { y: 20, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.5,
+            stagger: 0.06,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: row,
+              start: "top 85%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      });
+    }, sectionRef);
 
     return () => {
+      ctx.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
@@ -146,76 +164,64 @@ const TechStack = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen w-full py-24 px-6 bg-zinc-950 text-zinc-100 flex flex-col items-center overflow-hidden"
+      className="w-full py-24 px-6 md:px-12 lg:px-24"
     >
-      <StarsBackground />
+      <div className="max-w-4xl mx-auto">
+        {/* Kicker */}
+        <p
+          className="text-xs tracking-[0.2em] uppercase mb-4"
+          style={{
+            fontFamily: "var(--font-mono)",
+            color: "var(--fg-muted)",
+          }}
+        >
+          {`// 06`}
+        </p>
 
-      {/* Section indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="relative z-10 mb-6"
-      >
-        <span className="text-xs font-mono text-purple-500 tracking-widest uppercase">
-          // 06. Tech Stack
-        </span>
-      </motion.div>
+        {/* Title */}
+        <h2
+          className="text-5xl sm:text-6xl md:text-7xl font-black mb-16 leading-none"
+          style={{
+            fontFamily: "var(--font-display)",
+            color: "var(--fg)",
+          }}
+        >
+          Stack
+        </h2>
 
-      {/* Title */}
-      <motion.h2
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="relative z-10 text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 mb-6 text-center"
-      >
-        Tech Arsenal
-      </motion.h2>
+        {/* Categories */}
+        <div>
+          {techCategories.map((category, catIdx) => (
+            <div
+              key={catIdx}
+              ref={(el) => { rowRefs.current[catIdx] = el; }}
+              className="border-t py-10"
+              style={{ borderColor: "#1a1a1a" }}
+            >
+              {/* Category label */}
+              <p
+                className="text-xs tracking-[0.15em] uppercase mb-8"
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  color: "var(--fg-muted)",
+                }}
+              >
+                {category.title}
+              </p>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className="relative z-10 text-zinc-400 text-lg text-center mb-16"
-      >
-        Tools, languages, and frameworks I work with daily.
-      </motion.p>
-
-      {/* Categories */}
-      <div ref={categoriesRef} className="relative z-10 max-w-5xl w-full space-y-12">
-        {techCategories.map((category, catIdx) => (
-          <div key={catIdx} className="tech-category">
-            <h3 className="text-sm font-mono text-purple-400 uppercase tracking-wider mb-6 flex items-center gap-3">
-              <span className="w-8 h-px bg-gradient-to-r from-purple-500 to-transparent" />
-              {category.title}
-            </h3>
-
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-4">
-              {category.items.map(({ icon: Icon, name, color }, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={{ scale: 1.1, y: -5 }}
-                  className="tech-item group flex flex-col items-center justify-center p-4 bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl transition-all duration-300 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
-                >
-                  <Icon
-                    size={32}
-                    className="transition-all duration-300 group-hover:scale-110"
-                    style={{ color: color }}
-                  />
-                  <span className="mt-2 text-xs text-zinc-500 group-hover:text-zinc-300 transition-colors text-center">
-                    {name}
-                  </span>
-                </motion.div>
-              ))}
+              {/* Items */}
+              <div className="flex flex-wrap gap-x-8 gap-y-5">
+                {category.items.map((item, idx) => (
+                  <TechEntry key={idx} item={item} />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
 
-      {/* Decorative gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
+          {/* Bottom border */}
+          <div className="border-t" style={{ borderColor: "#1a1a1a" }} />
+        </div>
+      </div>
     </section>
   );
-};
-
-export default TechStack;
+}
