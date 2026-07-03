@@ -75,32 +75,32 @@ export default function Hero() {
     };
   }, [reduced]);
 
-  // First scroll PINS the hero and switches light -> dark in place (a clean
-  // crossfade, no content sliding). Once the switch completes the pin releases
-  // and normal scrolling resumes into the dark site.
+  // First scroll PINS the hero; the black night panel wipes in from the RIGHT
+  // (right -> left) over the white day, revealing the night theme. Once the
+  // wipe completes the pin releases and normal scrolling resumes.
   useEffect(() => {
     const section = sectionRef.current;
     if (!section || reduced) return;
 
     const ctx = gsap.context(() => {
-      gsap.set(section, { backgroundColor: "#f4f4f0" });
-      gsap.set(dayRef.current, { opacity: 1 });
-      gsap.set(nightRef.current, { opacity: 0 });
+      // Night starts fully clipped off the left edge, revealing from the right.
+      gsap.set(nightRef.current, { clipPath: "inset(0% 0% 0% 100%)" });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "+=75%",
+          end: "+=80%",
           scrub: 0.6,
           pin: true,
           pinSpacing: true,
         },
       });
 
-      tl.to(section, { backgroundColor: "#0a0a0a", ease: "none" }, 0)
-        .to(dayRef.current, { opacity: 0, ease: "none" }, 0)
-        .to(nightRef.current, { opacity: 1, ease: "none" }, 0.4);
+      tl.to(nightRef.current, {
+        clipPath: "inset(0% 0% 0% 0%)",
+        ease: "none",
+      });
     }, section);
 
     return () => {
@@ -205,8 +205,12 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* NIGHT — mirrors day */}
-      <div ref={nightRef} className="absolute inset-0 z-20" style={{ opacity: 0 }}>
+      {/* NIGHT — mirrors day; wipes in from the right over the day layer */}
+      <div
+        ref={nightRef}
+        className="absolute inset-0 z-20 bg-[#0a0a0a]"
+        style={{ clipPath: "inset(0% 0% 0% 100%)" }}
+      >
         <span className={`${KICKER_CLASS} text-[#c8ff00]`}>◑ During the night</span>
 
         <div className="flex h-full w-full flex-col items-center justify-center text-center">
