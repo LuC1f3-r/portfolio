@@ -56,7 +56,7 @@ export default function SectionTransition({
             trigger: section,
             start: "top 80%",
             end: "top 20%",
-            scrub: 1,
+            scrub: 0.3,
           },
         });
         animation.to(content, {
@@ -75,13 +75,13 @@ export default function SectionTransition({
             trigger: section,
             start: "top 85%",
             end: "top 30%",
-            scrub: 1,
+            scrub: 0.3,
           },
         });
         animation.to(content, {
           clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 100%)",
           opacity: 1,
-          ease: "power3.out",
+          ease: "power2.out",
         });
         break;
 
@@ -92,7 +92,7 @@ export default function SectionTransition({
             trigger: section,
             start: "top 80%",
             end: "top 40%",
-            scrub: 1,
+            scrub: 0.3,
           },
         });
         animation.to(content, {
@@ -109,7 +109,7 @@ export default function SectionTransition({
             trigger: section,
             start: "top 80%",
             end: "top 40%",
-            scrub: 1,
+            scrub: 0.3,
           },
         });
         animation.to(content, {
@@ -127,7 +127,7 @@ export default function SectionTransition({
             trigger: section,
             start: "top 80%",
             end: "top 50%",
-            scrub: 1,
+            scrub: 0.3,
           },
         });
         animation.to(content, {

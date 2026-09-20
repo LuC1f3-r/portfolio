@@ -1,16 +1,25 @@
 @import "tailwindcss";
 
-/* Smooth scroll base */
-html {
-  scroll-behavior: smooth;
-}
-
-html.lenis {
+/* Lenis smooth scrolling rules - do not use CSS scroll-behavior: smooth with Lenis */
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
 .lenis.lenis-smooth {
-  scroll-behavior: auto;
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 :root {

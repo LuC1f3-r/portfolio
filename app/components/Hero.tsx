@@ -10,6 +10,7 @@ import {
   FaTwitter,
   FaGithub,
 } from "react-icons/fa";
+import { useLenis } from "./SmoothScroll";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -151,7 +152,7 @@ export default function Hero({ play = false }: HeroProps) {
           trigger: section,
           start: "top top",
           end: "+=110%",
-          scrub: 1,
+          scrub: 0.3,
           pin: true,
           pinSpacing: true,
         },
@@ -165,9 +166,11 @@ export default function Hero({ play = false }: HeroProps) {
     };
   }, [reduced]);
 
+  const lenis = useLenis();
+
   const handleViewWork = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
+    lenis.scrollTo("#projects");
   };
 
   // Shared centered core so the name + roles sit at the SAME spot in both

@@ -62,29 +62,30 @@ export default function Services() {
   useEffect(() => {
     if (!gridRef.current) return;
 
-    const cards = gridRef.current.querySelectorAll(".service-card");
+    const ctx = gsap.context(() => {
+      const cards = gridRef.current?.querySelectorAll(".service-card");
+      if (!cards || cards.length === 0) return;
 
-    gsap.fromTo(
-      cards,
-      { y: 60, opacity: 0, scale: 0.95 },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: gridRef.current,
-          start: "top 75%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
+      gsap.fromTo(
+        cards,
+        { y: 60, opacity: 0, scale: 0.95 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: "top 75%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    }, gridRef);
 
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
