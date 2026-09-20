@@ -1,141 +1,136 @@
-'use client'
+"use client";
 
-import React, { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   SiJavascript,
   SiTypescript,
+  SiPython,
   SiHtml5,
   SiCss3,
-  SiC,
-  SiCplusplus,
-  SiPython,
   SiReact,
-  SiAngular,
   SiNextdotjs,
   SiNestjs,
   SiNodedotjs,
   SiFlask,
+  SiTailwindcss,
   SiDocker,
   SiPostgresql,
   SiMongodb,
+  SiRedis,
+  SiApachekafka,
   SiGit,
   SiLinux,
+  SiAmazon,
 } from "react-icons/si";
 
-const tech = [
-  { icon: SiJavascript, name: "JavaScript" },
-  { icon: SiTypescript, name: "TypeScript" },
-  { icon: SiReact, name: "React" },
-  { icon: SiNextdotjs, name: "Next.js" },
-  { icon: SiNodedotjs, name: "Node.js" },
-  { icon: SiPython, name: "Python" },
-  { icon: SiHtml5, name: "HTML5" },
-  { icon: SiCss3, name: "CSS3" },
-  { icon: SiAngular, name: "Angular" },
-  { icon: SiNestjs, name: "NestJS" },
-  { icon: SiFlask, name: "Flask" },
-  { icon: SiC, name: "C" },
-  { icon: SiCplusplus, name: "C++" },
-  { icon: SiDocker, name: "Docker" },
-  { icon: SiPostgresql, name: "PostgreSQL" },
-  { icon: SiMongodb, name: "MongoDB" },
-  { icon: SiGit, name: "Git" },
-  { icon: SiLinux, name: "Linux" },
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+type IconComponent = React.ComponentType<{ size?: number; className?: string }>;
+type TechItem = { icon: IconComponent | null; name: string };
+
+const techCategories: { title: string; items: TechItem[] }[] = [
+  {
+    title: "Languages",
+    items: [
+      { icon: SiJavascript, name: "JavaScript" },
+      { icon: SiTypescript, name: "TypeScript" },
+      { icon: SiPython, name: "Python" },
+      { icon: SiHtml5, name: "HTML5" },
+      { icon: SiCss3, name: "CSS3" },
+    ],
+  },
+  {
+    title: "Frameworks",
+    items: [
+      { icon: SiReact, name: "React" },
+      { icon: SiNextdotjs, name: "Next.js" },
+      { icon: SiNestjs, name: "NestJS" },
+      { icon: SiNodedotjs, name: "Node.js" },
+      { icon: SiFlask, name: "Flask" },
+      { icon: SiTailwindcss, name: "Tailwind" },
+    ],
+  },
+  {
+    title: "Infrastructure",
+    items: [
+      { icon: SiDocker, name: "Docker" },
+      { icon: SiPostgresql, name: "PostgreSQL" },
+      { icon: SiMongodb, name: "MongoDB" },
+      { icon: SiRedis, name: "Redis" },
+      { icon: SiApachekafka, name: "Kafka" },
+      { icon: null, name: "AWS SQS" },
+      { icon: SiGit, name: "Git" },
+      { icon: SiLinux, name: "Linux" },
+      { icon: SiAmazon, name: "AWS" },
+    ],
+  },
 ];
 
-const StarsBackground = () => {
-  const [stars, setStars] = React.useState<
-    { size: number; left: number; top: number; duration: number }[]
-  >([]);
+export default function TechStack() {
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    setStars(
-      Array.from({ length: 80 }).map(() => ({
-        size: Math.random() * 2 + 1,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        duration: Math.random() * 3 + 2,
-      }))
-    );
-  }, []);
+    const section = sectionRef.current;
+    if (!section) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  useEffect(() => {
-    const styleEl = document.createElement("style");
-    styleEl.innerHTML = `
-      @keyframes twinkle {
-        0%, 100% { opacity: 0.5; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.3); }
-      }
+    const ctx = gsap.context(() => {
+      gsap.from(".tech-name", {
+        y: 24,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.03,
+        ease: "power3.out",
+        scrollTrigger: { trigger: section, start: "top 70%" },
+      });
+    }, section);
 
-      @keyframes backgroundMove {
-        0% { transform: translate(0, 0); }
-        50% { transform: translate(-10px, -10px); }
-        100% { transform: translate(0, 0); }
-      }
-    `;
-    document.head.appendChild(styleEl);
-    return () => {
-      document.head.removeChild(styleEl);
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-      <div
-        className="absolute inset-0 animate-backgroundMove"
-        style={{ animation: "backgroundMove 60s infinite linear" }}
-      >
-        {stars.map((star, i) => (
-          <div
-            key={i}
-            className="bg-white rounded-full"
-            style={{
-              position: "absolute",
-              width: `${star.size}px`,
-              height: `${star.size}px`,
-              left: `${star.left}%`,
-              top: `${star.top}%`,
-              animation: `twinkle ${star.duration}s infinite ease-in-out`,
-              filter: "drop-shadow(0 0 6px #fff)",
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const TechStack = () => {
-  return (
-    <section className="relative min-h-screen w-full bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center overflow-hidden">
-      <StarsBackground />
-
-      <div className="relative z-10 text-center mb-10 px-4">
-        <h2 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent drop-shadow-lg">
-          Tech Arsenal
-        </h2>
-        <p className="text-zinc-400 text-lg sm:text-xl font-medium mt-2">
-          My favorite tools, languages, and frameworks.
+    // The one DAY beat low on the page — light, airy, a palette cleanser
+    // between two dark sections.
+    <section
+      ref={sectionRef}
+      className="w-full bg-[#f4f4f0] px-6 py-32 text-[#111] md:py-48"
+    >
+      <div className="mx-auto max-w-[1400px]">
+        <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.3em] text-[#888]">
+          Stack
         </p>
-      </div>
+        <h2 className="mt-5 max-w-[16ch] font-[family-name:var(--font-display)] text-5xl font-bold leading-[0.95] tracking-tight text-[#111] md:text-7xl">
+          Tools I build with.
+        </h2>
 
-      <div className="relative z-10 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6 px-4 sm:px-10 pointer-events-auto">
-        {tech.map(({ icon, name }, idx) => (
-          <div
-            key={idx}
-            className="flex flex-col items-center justify-center p-4 bg-zinc-900 border border-zinc-700 rounded-xl hover:border-purple-500 hover:shadow-lg hover:shadow-purple-700/40 transition-all hover:scale-110 cursor-pointer group"
-          >
-            <span className="text-purple-400 text-3xl md:text-4xl">
-              {React.createElement(icon)}
-            </span>
-            <span className="mt-2 text-xs text-zinc-400 opacity-80 group-hover:opacity-100 transition-opacity">
-              {name}
-            </span>
-          </div>
-        ))}
+        <div className="mt-20 space-y-14">
+          {techCategories.map((category) => (
+            <div
+              key={category.title}
+              className="grid grid-cols-1 gap-4 border-t border-[#111]/10 pt-8 md:grid-cols-[10rem_1fr] md:gap-10"
+            >
+              <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.2em] text-[#999]">
+                {category.title}
+              </p>
+              <div className="flex flex-wrap gap-x-6 gap-y-3">
+                {category.items.map((item) => (
+                  <span
+                    key={item.name}
+                    className="tech-name inline-flex items-center gap-2 px-1.5 py-0.5 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[#1a1a1a] transition-colors duration-200 hover:bg-[#c8ff00] hover:text-[#0a0a0a] md:text-4xl"
+                  >
+                    {item.icon && <item.icon size={22} className="opacity-70" />}
+                    {item.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
-};
-
-export default TechStack;
+}

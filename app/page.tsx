@@ -1,77 +1,96 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import StoryLoader from "@/app/components/StoryLoader";
+import SmoothScroll from "@/app/components/SmoothScroll";
+import SectionTransition from "@/app/components/SectionTransition";
 import Navbar from "@/app/components/Navbar";
-import Typewriter from "./components/Loader";
+import Footer from "@/app/components/Footer";
 import Hero from "@/app/components/Hero";
 import About from "@/app/about/page";
+import Impact from "@/app/components/Impact";
 import Experience from "./experience/page";
 import Projects from "@/app/projects/page";
-import Services from "@/app/services/page";
 import TechStack from "@/app/techstack/page";
 import Contact from "@/app/contacts/page";
 
 export default function Home() {
-  const [showHero, setShowHero] = useState(true);
+  const [showLoader, setShowLoader] = useState(true);
+  // `play` fires the hero intro choreography the instant the loader hands off.
+  const [play, setPlay] = useState(false);
+  // Scroll stays locked through the loader AND the intro reveal, so the
+  // choreographed moment can't be scrolled through.
+  const [locked, setLocked] = useState(true);
+
+  const handleLoaderComplete = () => {
+    setShowLoader(false);
+    setPlay(true);
+    // Release scroll once the intro sequence has played out.
+    window.setTimeout(() => setLocked(false), 1600);
+  };
 
   useEffect(() => {
-    const hideTimer = setTimeout(() => setShowHero(false), 5000);
-    return () => clearTimeout(hideTimer);
-  }, []);
+    document.body.style.overflow = locked ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [locked]);
 
-  // Show loading animation splash screen on reload
-  if (showHero) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black text-green-400 font-mono px-4">
-        <motion.div
-          className="text-lg md:text-2xl leading-relaxed"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 7, ease: "easeInOut" }}
-          exit={{ opacity: 0, transition: { duration: 10 } }}
-        >
-          <Typewriter onComplete={() => setShowHero(false)} />
-        </motion.div>
-      </div>
-    );
-  }
-
-  // Main content with all sections
   return (
-    <div className="relative w-full">
-      <Navbar />
-      {/* Add padding-top to account for fixed navbar */}
-      <main className="w-full">
-        {/* Each section should have proper spacing and IDs for navigation */}
-        <section id="home" className="min-h-screen">
-          <Hero />
-        </section>
+    <>
+      {/* Cinematic Loader */}
+      {showLoader && <StoryLoader onComplete={handleLoaderComplete} />}
 
-        <section id="about" className="min-h-screen">
-          <About />
-        </section>
+      {/* Main Content — always mounted so the hero can pre-stage its intro
+          behind the loader, then reveal the instant the curtain irises away. */}
+      <SmoothScroll>
+        <div className="relative w-full">
+          {/* Navigation */}
+          <Navbar />
 
-        <section id="experience" className="min-h-screen">
-          <Experience />
-        </section>
+          <main className="w-full">
+            {/* Hero Section */}
+            <section id="home" className="min-h-screen">
+              <Hero play={play} />
+            </section>
 
-        <section id="projects" className="min-h-screen">
-          <Projects />
-        </section>
+            {/* About pins + tears open via CSS sticky — render outside the
+                transform-based SectionTransition so sticky isn't broken. */}
+            <div id="about">
+              <About />
+            </div>
 
-        <section id="services" className="min-h-screen">
-          <Services />
-        </section>
+            {/* Impact Section */}
+            <SectionTransition id="impact" transitionType="fade">
+              <Impact />
+            </SectionTransition>
 
-        <section id="techstack" className="min-h-screen">
-          <TechStack />
-        </section>
+            {/* Experience + Projects use CSS sticky to pin. A transformed
+                ancestor (any SectionTransition type) breaks sticky, so these
+                render in plain id wrappers — they handle their own motion. */}
+            <div id="experience">
+              <Experience />
+            </div>
 
-        <section id="contacts" className="min-h-screen">
-          <Contact />
-        </section>
-      </main>
-    </div>
+            <div id="projects">
+              <Projects />
+            </div>
+
+            {/* TechStack Section */}
+            <SectionTransition id="techstack" transitionType="fade">
+              <TechStack />
+            </SectionTransition>
+
+            {/* Contact Section */}
+            <SectionTransition id="contacts" transitionType="fade">
+              <Contact />
+            </SectionTransition>
+          </main>
+
+          {/* Footer */}
+          <Footer />
+        </div>
+      </SmoothScroll>
+    </>
   );
 }

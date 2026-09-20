@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   FaInstagram,
   FaLinkedin,
@@ -10,154 +11,367 @@ import {
   FaGithub,
 } from "react-icons/fa";
 
-const roles = [
-  "Backend Developer",
-  "Microservices Specialist",
-  "Engineer of Chaos",
-  "Code Whisperer",
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const socialLinks = [
+  { icon: FaInstagram, href: "https://www.instagram.com/niy4z_ahmed/", label: "Instagram" },
+  { icon: FaLinkedin, href: "https://www.linkedin.com/in/niyazherkal/", label: "LinkedIn" },
+  { icon: FaTwitter, href: "https://x.com/Niyaznhh", label: "X" },
+  { icon: FaEnvelope, href: "mailto:niyaz47nhh@gmail.com", label: "Email" },
+  { icon: FaGithub, href: "https://github.com/LuC1f3-r", label: "GitHub" },
 ];
 
-export default function Hero() {
-  const [currentText, setCurrentText] = useState("");
-  const [roleIndex, setRoleIndex] = useState(0);
-  const [typingIndex, setTypingIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
+const dayCyclePhrases = [
+  "LuC1f3-r",
+  "Backend Engineer",
+  "Microservices Architect",
+  "Event-Driven Systems",
+  "AWS Cloud",
+];
+const nightCyclePhrases = [
+  "Full Stack Developer",
+  "Product Architect",
+  "Absorbing Something New",
+];
+
+const NAME_CLASS =
+  "block text-[15vw] md:text-[10.5vw] font-extrabold leading-[0.86] tracking-[-0.02em]";
+const BAND_CLASS =
+  "font-[family-name:var(--font-mono)] text-3xl font-bold tracking-tight md:text-5xl";
+const KICKER_CLASS =
+  "absolute left-6 top-28 z-10 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.35em]";
+
+// The name line lives inside this mask so it can be swept up from the baseline
+// during the intro. Same padding on day + night so the two cores stay pixel-
+// aligned as the wipe crosses (no jump). Descender room via paddingBottom.
+const MASK_BASE: CSSProperties = { paddingBottom: "0.12em" };
+
+// Soft-edged right->left reveal driven by the --wipe custom property (0 = fully
+// revealed, 112 = fully hidden). The 12% gradient band is the feathered edge.
+const featherMask =
+  "linear-gradient(to right, transparent calc((var(--wipe) - 12) * 1%), #000 calc(var(--wipe) * 1%))";
+
+interface HeroProps {
+  play?: boolean;
+}
+
+export default function Hero({ play = false }: HeroProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const dayRef = useRef<HTMLDivElement>(null);
+
+  const [reduced, setReduced] = useState(false);
+  const [phrase, setPhrase] = useState(0); // incoming / current role index
+  const [prev, setPrev] = useState(0); // outgoing role index (shown mid-swap)
+  const [swapping, setSwapping] = useState(false);
+  const idxRef = useRef(0);
 
   useEffect(() => {
-    const fullText = roles[roleIndex];
-    let delay = isDeleting ? 25 : 50; // Faster animation
+    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }, []);
 
-    if (!isDeleting && typingIndex === fullText.length) {
-      delay = 700; // Shorter pause at end
-    }
+  // Role cycling — overlap crossfade-glitch. 15 = lcm(5 day, 3 night).
+  useEffect(() => {
+    if (reduced) return;
+    let settle: ReturnType<typeof setTimeout>;
+    const tick = setInterval(() => {
+      const cur = idxRef.current;
+      const next = (cur + 1) % 15;
+      idxRef.current = next;
+      setPrev(cur);
+      setPhrase(next);
+      setSwapping(true);
+      settle = setTimeout(() => setSwapping(false), 460);
+    }, 2600);
+    return () => {
+      clearInterval(tick);
+      clearTimeout(settle);
+    };
+  }, [reduced]);
 
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        setCurrentText(fullText.substring(0, typingIndex + 1));
-        setTypingIndex(typingIndex + 1);
-        if (typingIndex + 1 === fullText.length) {
-          setTimeout(() => setIsDeleting(true), 700);
-        }
-      } else {
-        setCurrentText(fullText.substring(0, typingIndex - 1));
-        setTypingIndex(typingIndex - 1);
-        if (typingIndex - 1 === 0) {
-          setIsDeleting(false);
-          setRoleIndex((roleIndex + 1) % roles.length);
-        }
-      }
-    }, delay);
+  // Pre-stage the DAY intro elements the moment the hero mounts (still hidden
+  // behind the loader), so nothing flashes before the choreography plays.
+  useEffect(() => {
+    if (reduced || !dayRef.current) return;
+    const d = dayRef.current;
+    gsap.set(d.querySelectorAll(".hero-line"), { yPercent: 118 });
+    gsap.set(d.querySelectorAll(".day-kicker"), { autoAlpha: 0, x: -24 });
+    gsap.set(d.querySelectorAll(".role-swap"), { autoAlpha: 0, y: 30 });
+    gsap.set(d.querySelectorAll(".day-extras > *"), { autoAlpha: 0, y: 30 });
+  }, [reduced]);
 
-    return () => clearTimeout(timeout);
-    // eslint-disable-next-line
-  }, [typingIndex, isDeleting, roleIndex]);
+  // The intro. Fires when the loader hands off (`play`). Masked name lines
+  // sweep up in sequence, then the kicker, roles and support elements cascade.
+  useEffect(() => {
+    if (!play || reduced || !dayRef.current) return;
+    const d = dayRef.current;
+    const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+    tl.to(d.querySelectorAll(".hero-line"), {
+      yPercent: 0,
+      duration: 1.15,
+      stagger: 0.12,
+    })
+      .to(
+        d.querySelectorAll(".day-kicker"),
+        { autoAlpha: 1, x: 0, duration: 0.8, ease: "power3.out" },
+        "-=0.8"
+      )
+      .to(
+        d.querySelectorAll(".role-swap"),
+        { autoAlpha: 1, y: 0, duration: 0.8, ease: "power3.out" },
+        "-=0.65"
+      )
+      .to(
+        d.querySelectorAll(".day-extras > *"),
+        { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.09 },
+        "-=0.55"
+      )
+      // Let descenders (the y in Niyaz) breathe once the reveal has settled.
+      .set(d.querySelectorAll(".hero-mask"), { overflow: "visible" });
+
+    return () => {
+      tl.kill();
+    };
+  }, [play, reduced]);
+
+  // First scroll pins the hero; the night panel wipes in from the right with a
+  // soft feathered edge (right -> left). --wipe lives on the section so the
+  // light-leak edge can read the same value. ctx.revert() cleans up only this
+  // component's triggers (never a global getAll().kill()).
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || reduced) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(section, { "--wipe": 112 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "+=110%",
+          scrub: 1,
+          pin: true,
+          pinSpacing: true,
+        },
+      });
+
+      tl.to(section, { "--wipe": 0, ease: "none" });
+    }, section);
+
+    return () => {
+      ctx.revert();
+    };
+  }, [reduced]);
+
+  const handleViewWork = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Shared centered core so the name + roles sit at the SAME spot in both
+  // themes. `reveal` = day (masks clip for the intro sweep); night renders the
+  // same geometry but with masks open so it reads normally under the wipe.
+  const renderCore = ({
+    nameColor,
+    herkalColor,
+    phrases,
+    reveal,
+    baseStyle,
+  }: {
+    nameColor: string;
+    herkalColor: string;
+    phrases: string[];
+    reveal: boolean;
+    baseStyle?: CSSProperties;
+  }) => {
+    const maskStyle: CSSProperties = {
+      ...MASK_BASE,
+      overflow: reveal ? "hidden" : "visible",
+    };
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center text-center">
+        <h1
+          className="font-[family-name:var(--font-display)] tracking-tight"
+          style={{ color: nameColor }}
+        >
+          <span className="hero-mask block" style={maskStyle}>
+            <span className={`hero-line ${NAME_CLASS}`}>Niyaz Ahamad</span>
+          </span>
+          <span className="hero-mask -mt-[0.08em] block" style={maskStyle}>
+            <span className={`hero-line ${NAME_CLASS}`}>
+              <span style={{ color: herkalColor }}>Herkal</span>
+            </span>
+          </span>
+        </h1>
+
+        <div
+          className={`role-swap mt-8 w-full ${swapping ? "is-swapping" : ""}`}
+          aria-live="polite"
+        >
+          <span
+            className={`role-swap__layer role-swap__in ${BAND_CLASS}`}
+            style={baseStyle}
+          >
+            {phrases[phrase % phrases.length]}
+          </span>
+          <span
+            className={`role-swap__layer role-swap__out ${BAND_CLASS}`}
+            style={baseStyle}
+            aria-hidden
+          >
+            {phrases[prev % phrases.length]}
+          </span>
+          <span
+            className={`role-swap__layer role-swap__ghost role-swap__ghost--cyan ${BAND_CLASS}`}
+            aria-hidden
+          >
+            {phrases[phrase % phrases.length]}
+          </span>
+          <span
+            className={`role-swap__layer role-swap__ghost role-swap__ghost--lime ${BAND_CLASS}`}
+            aria-hidden
+          >
+            {phrases[phrase % phrases.length]}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  // --- Reduced-motion: static, stacked, fully readable. ---
+  if (reduced) {
+    return (
+      <section className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center gap-10 bg-[#f4f4f0] px-6 py-24 text-center">
+        <div>
+          <h1 className="font-[family-name:var(--font-display)] text-[13vw] font-extrabold leading-[0.86] tracking-tight text-[#111] md:text-[8vw]">
+            Niyaz Ahamad <span className="text-[#ff5c2b]">Herkal</span>
+          </h1>
+          <p className="mt-6 font-[family-name:var(--font-mono)] text-sm text-[#333]">
+            Backend Engineer · Microservices · AWS Cloud
+          </p>
+        </div>
+        <div className="border-t border-[#111]/15 pt-8">
+          <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.35em] text-[#888]">
+            During the night
+          </p>
+          <p className="mt-2 font-[family-name:var(--font-mono)] text-sm text-[#333]">
+            Full Stack Developer · Product Architect · Absorbing Something New
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  // --- Full experience: night wipes in over day (soft edge, right -> left). ---
+  const sectionStyle = {
+    backgroundColor: "#f4f4f0",
+    "--wipe": 112,
+  } as CSSProperties;
 
   return (
-    <section className="min-h-screen pt-0 w-full flex items-center justify-center bg-gradient-to-br from-black via-zinc-900 to-gray-900 p-6 sm:p-12">
-      <style>{`
-        .glow {
-          text-shadow:
-            0 0 8px #a78bfa,
-            0 0 16px #a78bfa,
-            0 0 32px #a78bfa,
-            0 0 64px #a78bfa;
-          animation: glowPulse 2s infinite alternate;
-        }
-        @keyframes glowPulse {
-          0% { text-shadow: 0 0 8px #a78bfa, 0 0 16px #a78bfa, 0 0 32px #a78bfa, 0 0 64px #a78bfa; }
-          100% { text-shadow: 0 0 16px #c4b5fd, 0 0 32px #c4b5fd, 0 0 64px #c4b5fd, 0 0 128px #c4b5fd; }
-        }
-        .essence {
-          background: linear-gradient(90deg, rgba(200,200,200,0.08) 0%, rgba(180,180,180,0.13) 100%);
-          color: #e5e7eb;
-          border-radius: 0.5rem;
-          box-shadow: 0 2px 32px 0 rgba(200,200,200,0.08);
-        }
-      `}</style>
-
-      <div className="flex flex-col md:flex-row items-center justify-between gap-10 max-w-6xl w-full mx-auto">
-        {/* LEFT SIDE */}
-        <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-4">
-          <h1 className="text-base sm:text-lg text-zinc-400">Heya, I am</h1>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-zinc-100 glow select-none">
-        Niyaz Ahamad Herkal
-          </h2>
-          <div className="flex items-center gap-2 border-t border-b border-zinc-700 px-2 py-2 w-full max-w-xs justify-center md:justify-start mt-4">
-        <div className="text-purple-400 text-lg sm:text-2xl min-h-[2.5rem] font-medium">
-          {currentText}
-          <span className="animate-pulse">|</span>
+    <section
+      ref={sectionRef}
+      className="relative min-h-[100dvh] w-full overflow-hidden px-6"
+      style={sectionStyle}
+    >
+      {/* DAY */}
+      <div ref={dayRef} className="absolute inset-0 z-10">
+        <span className={`day-kicker ${KICKER_CLASS} text-[#888]`}>◐ By day</span>
+        {renderCore({
+          nameColor: "#111111",
+          herkalColor: "#ff5c2b",
+          phrases: dayCyclePhrases,
+          reveal: true,
+          baseStyle: { color: "#111111" },
+        })}
+        <div className="day-extras absolute inset-x-0 bottom-[9vh] flex flex-col items-center gap-6 px-6">
+          <p className="max-w-[42ch] text-center font-[family-name:var(--font-body)] text-sm text-[#555] md:text-base">
+            By day — I ship scalable, event-driven backends.
+          </p>
+          <div className="flex items-center gap-6">
+            {socialLinks.map(({ icon: Icon, href, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="text-lg text-[#555] transition-colors duration-300 hover:text-[#111]"
+              >
+                <Icon />
+              </a>
+            ))}
+          </div>
+          <a
+            href="#projects"
+            onClick={handleViewWork}
+            className="inline-flex items-center gap-2 bg-[#c8ff00] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.18em] text-[#0a0a0a] transition-transform duration-300 hover:-translate-y-0.5"
+          >
+            View my work
+          </a>
         </div>
-          </div>
-          {/* Social Icons */}
-          <div className="flex gap-4 mt-6 justify-center md:justify-start text-xl sm:text-2xl">
-        <a
-          href="https://www.instagram.com/niy4z_ahmed/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-400 hover:text-pink-400 transition"
-          aria-label="Instagram"
-        >
-          <FaInstagram />
-        </a>
-        <a
-          href="https://www.linkedin.com/in/niyazherkal/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-400 hover:text-blue-400 transition"
-          aria-label="LinkedIn"
-        >
-          <FaLinkedin />
-        </a>
-        <a
-          href="https://x.com/Niyaznhh"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-400 hover:text-cyan-400 transition"
-          aria-label="Twitter"
-        >
-          <FaTwitter />
-        </a>
-        <a
-          href="mailto:niyaz47nhh@gmail.com"
-          className="text-purple-400 hover:text-red-400 transition"
-          aria-label="Email"
-        >
-          <FaEnvelope />
-        </a>
-        <a
-          href="https://github.com/LuC1f3-r"
-          className="text-purple-400 hover:text-red-400 transition"
-          aria-label="GitHub"
-        >
-          <FaGithub />
-        </a>
-          </div>
-          {/* CTA Button */}
-          <div className="mt-6 w-full flex justify-center md:justify-start">
-        <Link
-          href="#about"
-          className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all duration-300"
-        >
-          View my Portfolio
-        </Link>
-          </div>
-        </div>
-        {/* RIGHT SIDE */}
-        {/* <div className="w-full md:w-1/2 flex items-center justify-center mt-10 md:mt-0">
-          <div className="relative group w-40 sm:w-56 h-56 sm:h-[330px] rounded-xl overflow-hidden shadow-2xl border-4 border-purple-500 essence transition-transform duration-300 hover:scale-105">
-        <img
-          src="/assets/profile-picture.png"
-          alt="Niyaz"
-          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/40 text-zinc-100 text-center text-base sm:text-lg font-semibold tracking-wide">
-          Niyaz Ahamad Herkal
-        </div>
-          </div>
-        </div> */}
       </div>
+
+      {/* NIGHT — same centered core, wipes in from the right with a soft edge */}
+      <div
+        className="absolute inset-0 z-20 bg-[#0a0a0a]"
+        style={
+          {
+            WebkitMaskImage: featherMask,
+            maskImage: featherMask,
+          } as CSSProperties
+        }
+      >
+        <span className={`${KICKER_CLASS} text-[#c8ff00]`}>◑ During the night</span>
+        {renderCore({
+          nameColor: "#ededed",
+          herkalColor: "#c8ff00",
+          phrases: nightCyclePhrases,
+          reveal: false,
+          baseStyle: { color: "#ededed" },
+        })}
+        <div className="absolute inset-x-0 bottom-[9vh] flex flex-col items-center gap-6 px-6">
+          <p className="max-w-[42ch] text-center font-[family-name:var(--font-body)] text-sm text-[#888] md:text-base">
+            By night — off the clock, always building something new.
+          </p>
+          <div className="flex items-center gap-6">
+            {socialLinks.map(({ icon: Icon, href, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="text-lg text-[#888] transition-colors duration-300 hover:text-[#ededed]"
+              >
+                <Icon />
+              </a>
+            ))}
+          </div>
+          <a
+            href="#projects"
+            onClick={handleViewWork}
+            className="inline-flex items-center gap-2 bg-[#c8ff00] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.18em] text-[#0a0a0a] transition-transform duration-300 hover:-translate-y-0.5"
+          >
+            View my work
+          </a>
+        </div>
+      </div>
+
+      {/* Lime light-leak riding the wipe's leading edge. Reads the same --wipe
+          as the mask; GPU-friendly translateX (no layout). */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 z-30 w-[2px]"
+        style={{
+          transform: "translateX(calc(var(--wipe) * 1vw))",
+          background:
+            "linear-gradient(to bottom, transparent, #c8ff00 45%, #eaff8a 50%, #c8ff00 55%, transparent)",
+          boxShadow: "0 0 28px 6px rgba(200,255,0,0.5)",
+        }}
+      />
     </section>
   );
 }

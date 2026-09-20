@@ -1,116 +1,208 @@
 "use client";
 
-import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Send, ArrowUpRight } from "lucide-react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const contactItems = [
+  { label: "Email", value: "niyaz47nhh@gmail.com", href: "mailto:niyaz47nhh@gmail.com" },
+  { label: "Phone", value: "+91 88848 01005", href: "tel:+918884801005" },
+  { label: "Location", value: "Bangalore, India", href: null },
+];
+
+const MASK_STYLE: CSSProperties = { overflow: "hidden", paddingBottom: "0.1em" };
+const inputClass =
+  "w-full rounded-none border border-[#1a1a1a] bg-[#0e0e0e] px-4 py-3 text-[#ededed] placeholder-[#555] transition-colors duration-200 focus:border-[#c8ff00] focus:outline-none focus:ring-1 focus:ring-[#c8ff00]";
+const labelClass =
+  "mb-2 block font-[family-name:var(--font-mono)] text-xs uppercase tracking-wide text-[#888]";
 
 export default function ContactPage() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }, []);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || reduced) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(".contact-line", { yPercent: 120 });
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            io.disconnect();
+            const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+            tl.to(".contact-line", { yPercent: 0, duration: 1.0, stagger: 0.1 }).set(
+              ".contact-mask",
+              { overflow: "visible" }
+            );
+          }
+        },
+        { threshold: 0.4 }
+      );
+      io.observe(section);
+
+      if (formRef.current) {
+        gsap.from(formRef.current.querySelectorAll("input, textarea, button"), {
+          y: 24,
+          opacity: 0,
+          duration: 0.55,
+          stagger: 0.07,
+          ease: "power3.out",
+          scrollTrigger: { trigger: formRef.current, start: "top 82%" },
+        });
+      }
+
+      return () => io.disconnect();
+    }, section);
+
+    return () => ctx.revert();
+  }, [reduced]);
+
+  // Magnetic send button — the transform trails the cursor via the CSS
+  // transition, off the React render loop.
+  const onBtnMove = (e: React.MouseEvent) => {
+    const b = btnRef.current;
+    if (!b || reduced) return;
+    const r = b.getBoundingClientRect();
+    const x = e.clientX - (r.left + r.width / 2);
+    const y = e.clientY - (r.top + r.height / 2);
+    b.style.transform = `translate(${x * 0.3}px, ${y * 0.45}px)`;
+  };
+  const onBtnLeave = () => {
+    if (btnRef.current) btnRef.current.style.transform = "translate(0,0)";
+  };
+
   return (
-    <main className="min-h-screen w-screen flex flex-col items-center justify-between bg-gradient-to-br from-purple-900 via-black to-zinc-900 relative overflow-hidden text-zinc-100">
-      {/* Animated background blobs */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
-        <div className="absolute w-72 h-72 bg-purple-700 opacity-30 rounded-full mix-blend-multiply filter blur-2xl animate-pulse left-[-6rem] top-[-6rem]" />
-        <div className="absolute w-96 h-96 bg-pink-500 opacity-20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse right-[-8rem] bottom-[-8rem]" />
-        <div className="absolute w-60 h-60 bg-blue-500 opacity-20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse left-[40%] top-[-4rem] animate-slow" />
-        <div className="absolute w-80 h-80 bg-purple-400 opacity-15 rounded-full mix-blend-multiply filter blur-3xl animate-pulse right-[30%] bottom-[-6rem] animate-slower" />
-      </div>
-
-      {/* Contact Heading & Form */}
-      <section className="py-24 px-4 max-w-4xl mx-auto text-center z-10 w-full">
-        <h2 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600 mb-8 drop-shadow-lg animate-fade-in">
-          Contact Me
-        </h2>
-        <p className="text-zinc-300 mb-12 text-lg animate-fade-in delay-100">
-          Have a project, idea, or opportunity?
-          <br />
-          <span className="text-purple-300 font-semibold">
-            Let’s build something together.
-          </span>
+    <section
+      ref={sectionRef}
+      className="relative min-h-[100dvh] w-full overflow-hidden bg-[#060606] px-6 py-28 text-[#ededed]"
+    >
+      <div className="mx-auto w-full max-w-4xl">
+        <p className="mb-8 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.3em] text-[#888]">
+          Contact
         </p>
-        {/* Contact Form */}
-        <form
-          className="flex flex-col gap-4 animate-fade-in delay-200"
-          action="https://formsubmit.co/niyaz47nhh@gmail.com"
-          method="POST"
-        >
-          <input
-            type="text"
-            placeholder="Your Name"
-            className="p-3 rounded bg-zinc-800 border border-zinc-700 placeholder-zinc-500 focus:outline-none focus:border-purple-500"
-          />
-          <input
-            type="email"
-            placeholder="Your Email"
-            className="p-3 rounded bg-zinc-800 border border-zinc-700 placeholder-zinc-500 focus:outline-none focus:border-purple-500"
-          />
-          <textarea
-            placeholder="Your Message"
-            rows={5}
-            className="p-3 rounded bg-zinc-800 border border-zinc-700 placeholder-zinc-500 focus:outline-none focus:border-purple-500"
-          ></textarea>
-          <button
-            type="submit"
-            className="mt-4 px-6 py-3 rounded bg-gradient-to-r from-purple-600 to-pink-500 hover:brightness-110 transition text-white font-semibold shadow-lg"
+
+        {/* Masked kinetic headline */}
+        <h2 className="mb-16 font-[family-name:var(--font-display)] text-6xl font-bold leading-[0.9] tracking-tight text-[#ededed] sm:text-7xl md:text-8xl">
+          <span className="contact-mask block" style={MASK_STYLE}>
+            <span className="contact-line block">Let&apos;s build</span>
+          </span>
+          <span className="contact-mask block" style={MASK_STYLE}>
+            <span className="contact-line block">
+              something <span className="text-[#c8ff00]">good.</span>
+            </span>
+          </span>
+        </h2>
+
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
+          <form
+            ref={formRef}
+            className="flex flex-col gap-5 lg:col-span-3"
+            action="https://formsubmit.co/niyaz47nhh@gmail.com"
+            method="POST"
           >
-            Send Message
-          </button>
-        </form>
-      </section>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className={labelClass}>Name</label>
+                <input type="text" name="name" required placeholder="Bruce Wayne" className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Email</label>
+                <input type="email" name="email" required placeholder="you@company.com" className={inputClass} />
+              </div>
+            </div>
+            <div>
+              <label className={labelClass}>Subject</label>
+              <input type="text" name="subject" placeholder="Project inquiry" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Message</label>
+              <textarea
+                name="message"
+                required
+                rows={5}
+                placeholder="Tell me about what you're building..."
+                className={`${inputClass} resize-none`}
+              />
+            </div>
 
-      {/* Bottom Icons Section */}
-      <div className="w-full max-w-4xl mx-auto px-4 pb-10 grid grid-cols-1 sm:grid-cols-3 gap-8 text-purple-400 text-center z-10 animate-fade-in delay-300 border-t border-zinc-700 pt-8">
-        <div className="group flex flex-col items-center gap-2 hover:text-pink-400 transition">
-          <FaPhoneAlt
-            size={28}
-            className="group-hover:scale-110 transition-transform"
-          />
-          <span className="text-sm font-medium">+91 88848 01005</span>
+            {/* Hidden formsubmit fields — do not remove */}
+            <input type="hidden" name="_next" value="https://luc1f3r.vercel.app" />
+            <input type="hidden" name="_captcha" value="false" />
+
+            <button
+              ref={btnRef}
+              type="submit"
+              onMouseMove={onBtnMove}
+              onMouseLeave={onBtnLeave}
+              className="mt-1 inline-flex items-center justify-center gap-2 bg-[#c8ff00] px-8 py-4 font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-[0.18em] text-[#0a0a0a] transition-transform duration-300 ease-out active:scale-[0.98]"
+            >
+              <span>Send message</span>
+              <Send size={15} />
+            </button>
+          </form>
+
+          {/* Info side */}
+          <div className="flex flex-col gap-8 lg:col-span-2">
+            <ul className="flex flex-col gap-5">
+              {contactItems.map((item) => (
+                <li key={item.label} className="border-b border-[#1a1a1a] pb-5">
+                  <span className="mb-1 block font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#888]">
+                    {item.label}
+                  </span>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      className="text-base text-[#ededed] transition-colors duration-200 hover:text-[#c8ff00]"
+                    >
+                      {item.value}
+                    </a>
+                  ) : (
+                    <span className="text-base text-[#ededed]">{item.value}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            <div>
+              <p className="mb-2 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#888]">
+                Schedule
+              </p>
+              <a
+                href="https://cal.com/niyazherkal"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-1.5 text-sm text-[#ededed] transition-colors duration-200 hover:text-[#c8ff00]"
+              >
+                <span>Book a call</span>
+                <ArrowUpRight
+                  size={14}
+                  className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                />
+              </a>
+            </div>
+          </div>
         </div>
-        <div className="group flex flex-col items-center gap-2 hover:text-pink-400 transition">
-          <FaEnvelope
-            size={28}
-            className="group-hover:scale-110 transition-transform"
-          />
-          <span className="text-sm font-medium">niyaz47nhh@gmail.com</span>
-        </div>
-        <div className="group flex flex-col items-center gap-2 hover:text-pink-400 transition">
-          <FaMapMarkerAlt
-            size={28}
-            className="group-hover:scale-110 transition-transform"
-          />
-          <span className="text-sm font-medium">Bangalore, India</span>
-        </div>
+
+        {/* Batman closer — the payoff the whole night has been building to */}
+        <p className="mt-28 font-[family-name:var(--font-mono)] text-sm tracking-wide text-[#555]">
+          Full-time developer by day. And by night, I&apos;m{" "}
+          <span className="text-[#c8ff00]">Batman</span>.
+        </p>
       </div>
-
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: none;
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out both;
-        }
-        .delay-100 {
-          animation-delay: 0.1s;
-        }
-        .delay-200 {
-          animation-delay: 0.2s;
-        }
-        .delay-300 {
-          animation-delay: 0.3s;
-        }
-        .animate-slow {
-          animation-duration: 3s !important;
-        }
-        .animate-slower {
-          animation-duration: 5s !important;
-        }
-      `}</style>
-    </main>
+    </section>
   );
 }

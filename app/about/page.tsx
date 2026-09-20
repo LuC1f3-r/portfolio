@@ -1,107 +1,209 @@
 "use client";
 
-import React, { useState } from "react";
+import { useRef, useEffect, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function About() {
   const [open, setOpen] = useState(false);
-  return (
-    <section className="w-screen min-h-screen pt-16 flex flex-col items-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-800 text-zinc-100">
-      {/* Centered About Me Title at Top */}
-      <h2 className="text-4xl sm:text-5xl font-extrabold text-purple-500 drop-shadow-lg mb-12">
-        About Me
-      </h2>
+  const sectionRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const cvRef = useRef<HTMLDivElement>(null);
 
-      {/* Two Columns Grid */}
-      <div className="max-w-6xl w-full px-8 py-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-        {/* Left Side - About Text */}
-        <div className="space-y-6">
-          <p className="text-zinc-400 text-sm font-mono">~/luc1f3r/about</p>
-          <p className="text-lg sm:text-xl text-zinc-300 leading-relaxed">
-            Hi, I am{" "}
-            <span className="text-purple-400 font-semibold">
-              Niyaz Ahamad Herkal
-            </span>{" "}
-            (<span className="text-purple-400">LuC1f3-r</span>). I engineer
-            resilient systems with an obsession for{" "}
-            <span className="text-purple-300">uptime</span>,{" "}
-            <span className="text-purple-300">scalability</span>, and{" "}
-            <span className="text-purple-300">chaos resistance</span>.{" "}
-            <span className="text-lg sm:text-xl text-zinc-300 leading-relaxed">
-              I thrive in fast-paced environments, love solving complex
-              problems, and enjoy collaborating with teams to deliver
-              high-impact solutions. When I&apos;m not coding, you&apos;ll find me
-              exploring new tech, contributing to open source, or gaming.
-            </span>
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    // Gate all motion behind reduced-motion check
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // Set final fully-visible state immediately
+      if (titleRef.current) gsap.set(titleRef.current, { y: 0, opacity: 1 });
+      if (bodyRef.current) gsap.set(bodyRef.current, { y: 0, opacity: 1 });
+      if (cvRef.current) gsap.set(cvRef.current, { y: 0, opacity: 1 });
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      // Title reveal
+      if (titleRef.current) {
+        gsap.fromTo(
+          titleRef.current,
+          { y: 60, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 75%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+
+      // Body text reveal
+      if (bodyRef.current) {
+        gsap.fromTo(
+          bodyRef.current,
+          { y: 48, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            delay: 0.18,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 65%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+
+      // CV control reveal
+      if (cvRef.current) {
+        gsap.fromTo(
+          cvRef.current,
+          { y: 32, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            delay: 0.32,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 60%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+    }, section);
+
+    return () => {
+      // ctx.revert() handles only this section's triggers — never
+      // getAll().kill(), which would nuke every other section on remount.
+      ctx.revert();
+    };
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!cvRef.current?.contains(target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="w-full py-24 px-6 bg-[#0a0a0a] overflow-hidden"
+    >
+      <div className="max-w-[1400px] mx-auto">
+        {/* Mono kicker */}
+        <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-[#888] mb-8">
+          About
+        </p>
+
+        {/* Section heading */}
+        <h2
+          ref={titleRef}
+          className="font-[family-name:var(--font-display)] text-[#ededed] text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight mb-12 max-w-[18ch]"
+        >
+          The engineer behind the work.
+        </h2>
+
+        {/* Editorial bio */}
+        <div
+          ref={bodyRef}
+          className="max-w-[62ch] space-y-6"
+        >
+          <p className="font-[family-name:var(--font-body)] text-[#ededed] text-lg sm:text-xl leading-[1.75]">
+            Results-driven Backend Engineer with 3 years of experience building
+            scalable production APIs and{" "}
+            <strong className="text-[#c8ff00] font-semibold">
+              event-driven microservices
+            </strong>{" "}
+            using Node.js, NestJS, and{" "}
+            <strong className="text-[#c8ff00] font-semibold">AWS</strong>.
+            Currently leading backend architecture on a B2C platform scaled to{" "}
+            <strong className="text-[#c8ff00] font-semibold">
+              10,000+ daily transactions
+            </strong>
+            ; specialist in TypeScript,{" "}
+            <strong className="font-semibold text-[#ededed]">
+              AWS serverless
+            </strong>
+            , Kafka-based event flows, and distributed authentication systems.
           </p>
 
-          <div className="relative inline-block">
-            <button
-              onClick={() => setOpen(!open)}
-              className="relative inline-block text-white font-semibold py-3 px-6 rounded-full transition-transform transform hover:scale-105 shadow-lg overflow-hidden group border border-fuchsia-500/30"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-gradient-x z-0"></span>
-              <span className="relative z-10">Download CV</span>
-            </button>
-
-            {open && (
-              <div className="absolute mt-3 w-60 rounded-xl backdrop-blur-md border border-fuchsia-500/30 shadow-lg bg-gradient-to-br from-[#1a1a1a]/90 to-[#2a003f]/80 text-white">
-                {/* No internal padding */}
-                <a
-                  href="/assets/niyazahamadherkal-dark.pdf"
-                  download
-                  className="block w-full px-5 py-3 text-sm font-medium hover:bg-fuchsia-500/10 hover:pl-6 transition-all"
-                >
-                  🥷🏼 Download Dark Theme
-                </a>
-                <a
-                  href="/assets/niyazahamadherkal-light.pdf"
-                  download
-                  className="block w-full px-5 py-3 text-sm font-medium hover:bg-fuchsia-500/10 hover:pl-6 transition-all"
-                >
-                  🧝🏻‍♂️ Download Light Theme
-                </a>
-              </div>
-            )}
-          </div>
-          <style>{`
-            @keyframes gradient-x {
-              0% {
-                background-position: 0% 50%;
-              }
-              100% {
-                background-position: 100% 50%;
-              }
-            }
-            .animate-gradient-x {
-              background-size: 200% 200%;
-              animation: gradient-x 3s linear infinite;
-            }
-          `}</style>
+          <p className="font-[family-name:var(--font-body)] text-[#888] text-base sm:text-lg leading-[1.75]">
+            Systems that hold under pressure are the ones worth building. That
+            conviction shapes every architectural decision I make.
+          </p>
         </div>
 
-        {/* Right Side - Skills */}
-        <div className="space-y-6">
-          <div className="space-y-4">
-            {[
-              { label: "Backend Development", value: 90 },
-              { label: "Web Design", value: 80 },
-              { label: "UI Development", value: 80 },
-              { label: "Copywriting", value: 85 },
-            ].map((skill, i) => (
-              <div key={i}>
-                <div className="flex justify-between mb-1">
-                  <span className="text-m text-zinc-300">{skill.label}</span>
-                  <span className="text-m text-zinc-400">{skill.value}%</span>
-                </div>
-                <div className="w-full bg-zinc-700 rounded-full h-2">
-                  <div
-                    className="bg-purple-500 h-2 rounded-full transition-all duration-500 ease-in-out"
-                    style={{ width: `${skill.value}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Download CV */}
+        <div ref={cvRef} className="relative mt-12 inline-block">
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            className="inline-flex items-center gap-3 border border-[#c8ff00] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.18em] text-[#c8ff00] transition-colors duration-200 hover:bg-[#c8ff00] hover:text-[#0a0a0a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c8ff00]"
+          >
+            Download CV
+            <span
+              className="transition-transform duration-200"
+              style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+              aria-hidden
+            >
+              ↓
+            </span>
+          </button>
+
+          {/* Dropdown */}
+          {open && (
+            <div
+              role="listbox"
+              className="absolute left-0 mt-2 w-52 bg-[#111] border border-[#333] z-50"
+            >
+              <a
+                href="/assets/niyazahamadherkal-dark.pdf"
+                download
+                role="option"
+                aria-selected={false}
+                className="flex items-center gap-3 w-full px-5 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.14em] text-[#ededed] hover:bg-[#1a1a1a] hover:text-[#c8ff00] transition-colors duration-150"
+                onClick={() => setOpen(false)}
+              >
+                <span className="w-2 h-2 bg-[#0a0a0a] border border-[#555] inline-block shrink-0" />
+                Dark theme
+              </a>
+              <a
+                href="/assets/niyazahamadherkal-light.pdf"
+                download
+                role="option"
+                aria-selected={false}
+                className="flex items-center gap-3 w-full px-5 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.14em] text-[#ededed] hover:bg-[#1a1a1a] hover:text-[#c8ff00] transition-colors duration-150 border-t border-[#222]"
+                onClick={() => setOpen(false)}
+              >
+                <span className="w-2 h-2 bg-[#ededed] border border-[#555] inline-block shrink-0" />
+                Light theme
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </section>
