@@ -30,7 +30,7 @@ export default function About() {
               I thrive in fast-paced environments, love solving complex
               problems, and enjoy collaborating with teams to deliver
               high-impact solutions. When I&apos;m not coding, you&apos;ll find me
-              exploring new tech, contributing to open source, or gaming.
+              exploring new tech, contributing to open source, or gaming. 
             </span>
           </p>
 
