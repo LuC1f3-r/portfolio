@@ -100,7 +100,7 @@ export default function Services() {
         className="mb-6"
       >
         <span className="text-xs font-mono text-purple-500 tracking-widest uppercase">
-          // 05. Services
+          {"// 05. Services"}
         </span>
       </motion.div>
 

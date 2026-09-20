@@ -172,13 +172,16 @@ export function ParallaxLayer({ children, speed = 0.5, className = "" }: Paralla
   const layerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!layerRef.current) return;
+    const layer = layerRef.current;
+    if (!layer) return;
 
-    gsap.to(layerRef.current, {
+    const parent = layer.parentElement;
+
+    gsap.to(layer, {
       yPercent: -100 * speed,
       ease: "none",
       scrollTrigger: {
-        trigger: layerRef.current.parentElement,
+        trigger: parent,
         start: "top bottom",
         end: "bottom top",
         scrub: true,
@@ -187,7 +190,7 @@ export function ParallaxLayer({ children, speed = 0.5, className = "" }: Paralla
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.vars.trigger === layerRef.current?.parentElement) {
+        if (trigger.vars.trigger === parent) {
           trigger.kill();
         }
       });
@@ -212,14 +215,15 @@ export function StaggerReveal({ children, className = "", staggerDelay = 0.1 }: 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
     
-    const items = containerRef.current.children;
+    const items = container.children;
 
     gsap.set(items, { y: 50, opacity: 0 });
 
     ScrollTrigger.create({
-      trigger: containerRef.current,
+      trigger: container,
       start: "top 80%",
       onEnter: () => {
         gsap.to(items, {
@@ -235,7 +239,7 @@ export function StaggerReveal({ children, className = "", staggerDelay = 0.1 }: 
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.vars.trigger === containerRef.current) {
+        if (trigger.vars.trigger === container) {
           trigger.kill();
         }
       });
@@ -260,14 +264,15 @@ export function TextReveal({ text, className = "", delay = 0 }: TextRevealProps)
   const textRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (!textRef.current) return;
+    const textEl = textRef.current;
+    if (!textEl) return;
 
-    const chars = textRef.current.querySelectorAll(".char");
+    const chars = textEl.querySelectorAll(".char");
     
     gsap.set(chars, { y: 100, opacity: 0 });
 
     ScrollTrigger.create({
-      trigger: textRef.current,
+      trigger: textEl,
       start: "top 85%",
       onEnter: () => {
         gsap.to(chars, {
@@ -284,7 +289,7 @@ export function TextReveal({ text, className = "", delay = 0 }: TextRevealProps)
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.vars.trigger === textRef.current) {
+        if (trigger.vars.trigger === textEl) {
           trigger.kill();
         }
       });
