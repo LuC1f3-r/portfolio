@@ -1,102 +1,180 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
-const metrics = [
-  { value: "3", suffix: "", label: "years coding" },
-  { value: "7", suffix: "", label: "projects shipped" },
-  { value: "10,000", suffix: "+", label: "daily booking transactions" },
-  { value: "60", suffix: "%", label: "fewer redundant auth transactions" },
-  { value: "20", suffix: "%", label: "lower inter-service latency" },
+// The production wins get top billing (they count up). The softer context
+// stats sit in a quiet strip below.
+const featured = [
+  { prefix: "", target: 10000, suffix: "+", comma: true, label: "daily booking transactions" },
+  { prefix: "−", target: 60, suffix: "%", comma: false, label: "fewer redundant auth calls" },
+  { prefix: "−", target: 20, suffix: "%", comma: false, label: "lower inter-service latency" },
 ];
+
+const marqueeItems = [
+  "10,000+ transactions / day",
+  "−60% redundant auth",
+  "−20% inter-service latency",
+  "95% test coverage",
+];
+
+const fmt = (n: number, comma: boolean) =>
+  comma ? Math.round(n).toLocaleString("en-US") : Math.round(n).toString();
+
+const MASK_STYLE: CSSProperties = { overflow: "hidden", paddingBottom: "0.1em" };
 
 export default function Impact() {
   const sectionRef = useRef<HTMLElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      itemRefs.current.forEach((el) => {
-        if (el) gsap.set(el, { opacity: 1, y: 0 });
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const nums = section.querySelectorAll<HTMLElement>(".stat-val");
+
+    if (reduced) {
+      nums.forEach((el, i) => {
+        el.textContent = featured[i].prefix + fmt(featured[i].target, featured[i].comma);
       });
       return;
     }
 
     const ctx = gsap.context(() => {
-      itemRefs.current.forEach((el, i) => {
-        if (!el) return;
-        gsap.fromTo(
-          el,
-          { opacity: 0, y: 32 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "power3.out",
-            delay: i * 0.08,
-            scrollTrigger: {
-              trigger: section,
-              start: "top 80%",
-              once: true,
-            },
-          }
-        );
+      // Pre-stage: masked headline lines hidden, stat blocks lowered, numbers 0.
+      gsap.set(".impact-line", { yPercent: 120 });
+      gsap.set(".stat-block", { autoAlpha: 0, y: 30 });
+      nums.forEach((el, i) => {
+        el.textContent = featured[i].prefix + "0";
       });
+
+      const startCounts = () => {
+        featured.forEach((m, i) => {
+          const el = nums[i];
+          if (!el) return;
+          const obj = { v: 0 };
+          gsap.to(obj, {
+            v: m.target,
+            duration: 1.7,
+            delay: i * 0.12,
+            ease: "power2.out",
+            onUpdate: () => {
+              el.textContent = m.prefix + fmt(obj.v, m.comma);
+            },
+            // Lime "ignite" as each number locks in.
+            onComplete: () => {
+              gsap.fromTo(
+                el,
+                { color: "#c8ff00" },
+                { color: "#ededed", duration: 0.7, ease: "power2.out" }
+              );
+            },
+          });
+        });
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            io.disconnect();
+            const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+            tl.to(".impact-line", { yPercent: 0, duration: 1.0, stagger: 0.1 })
+              .set(".impact-mask", { overflow: "visible" })
+              .to(
+                ".stat-block",
+                { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.12, ease: "power3.out" },
+                "-=0.5"
+              )
+              .add(startCounts, "-=0.35");
+          }
+        },
+        { threshold: 0.35 }
+      );
+      io.observe(section);
+
+      return () => io.disconnect();
     }, section);
 
     return () => {
+      // ctx.revert() handles this component's tweens only. Never getAll().kill().
       ctx.revert();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="w-full bg-[#0a0a0a] px-6 py-24 md:py-32"
+      className="relative w-full overflow-hidden bg-[#070707] px-6 py-28 md:py-40"
     >
-      <div className="mx-auto max-w-[1400px]">
-        {/* Kicker */}
-        <p className="mb-16 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-[#888]">
+      {/* Deep-night vignette for cinematic depth */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,0.75) 100%)",
+        }}
+      />
+
+      <div className="relative mx-auto max-w-[1400px]">
+        <p className="mb-8 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.3em] text-[#666]">
           By the numbers
         </p>
 
-        {/* Metrics grid */}
-        <div className="grid grid-cols-2 gap-0 md:grid-cols-5">
-          {metrics.map(({ value, suffix, label }, i) => (
+        {/* Masked kinetic headline */}
+        <h2 className="font-[family-name:var(--font-display)] text-[#ededed] text-5xl font-bold leading-[0.95] tracking-tight sm:text-6xl md:text-7xl">
+          <span className="impact-mask block" style={MASK_STYLE}>
+            <span className="impact-line block">The numbers</span>
+          </span>
+          <span className="impact-mask block" style={MASK_STYLE}>
+            <span className="impact-line block">
+              held <span className="text-[#c8ff00]">under load.</span>
+            </span>
+          </span>
+        </h2>
+
+        <p className="mt-6 max-w-[46ch] font-[family-name:var(--font-body)] text-base text-[#888] md:text-lg">
+          Measured in production — real systems under real traffic.
+        </p>
+
+        {/* Featured production stats — count up + ignite lime */}
+        <div className="mt-20 grid grid-cols-1 gap-y-14 md:grid-cols-3 md:gap-y-0">
+          {featured.map((m, i) => (
             <div
-              key={label}
-              ref={(el) => {
-                itemRefs.current[i] = el;
-              }}
-              className={`py-10 pr-8 opacity-0 ${
-                i !== 0
-                  ? "border-l border-[#1a1a1a] pl-8"
-                  : ""
-              } ${
-                // On mobile (2-col grid), add top border to items in row 2+
-                i >= 2 ? "col-span-1 border-t border-[#1a1a1a] md:border-t-0 pt-10 md:pt-10" : ""
+              key={m.label}
+              className={`stat-block ${
+                i > 0 ? "md:border-l md:border-[#1c1c1c] md:pl-10" : ""
               }`}
             >
-              {/* Numeral */}
-              <p className="font-[family-name:var(--font-display)] text-[clamp(3rem,6vw,5.5rem)] font-bold leading-none tracking-tight text-[#ededed]">
-                {value}
-                <span className="text-[#c8ff00]">{suffix}</span>
+              <p className="font-[family-name:var(--font-display)] font-bold leading-none tracking-tight text-[#ededed] text-[clamp(3.5rem,8vw,6.5rem)]">
+                <span className="stat-val">{m.prefix}0</span>
+                <span className="text-[#c8ff00]">{m.suffix}</span>
               </p>
-              {/* Caption */}
-              <p className="mt-4 font-[family-name:var(--font-mono)] text-xs text-[#888] leading-relaxed">
-                {label}
+              <p className="mt-5 max-w-[22ch] font-[family-name:var(--font-mono)] text-xs leading-relaxed text-[#777]">
+                {m.label}
               </p>
             </div>
+          ))}
+        </div>
+
+        {/* Quiet context strip */}
+        <p className="mt-20 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-[#555]">
+          3 years coding · 7 projects shipped
+        </p>
+      </div>
+
+      {/* The page's single marquee — metric phrases drifting in outline type */}
+      <div className="marquee relative mt-24 py-4" aria-hidden>
+        <div className="marquee__track">
+          {[...marqueeItems, ...marqueeItems].map((item, i) => (
+            <span
+              key={i}
+              className="mx-8 font-[family-name:var(--font-display)] text-4xl font-bold uppercase tracking-tight text-transparent md:text-6xl"
+              style={{ WebkitTextStroke: "1px #242424" }}
+            >
+              {item}
+            </span>
           ))}
         </div>
       </div>

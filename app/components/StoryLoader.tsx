@@ -21,23 +21,37 @@ export default function StoryLoader({ onComplete }: StoryLoaderProps) {
     }
   }, [onComplete]);
 
-  // Simulated load progress (~4.5s). The color wipe across the name tracks this.
+  // Failsafe: never trap the user on the loader. Force the exit iris after a
+  // hard cap even if the simulated progress stalls for any reason.
+  useEffect(() => {
+    const failsafe = setTimeout(() => {
+      setPhase((p) => (p === "exiting" ? p : "exiting"));
+    }, 8000);
+    return () => clearTimeout(failsafe);
+  }, []);
+
+  // Simulated load progress (~4.5s). The color wipe across the name tracks it.
+  // Keep the updater pure — no side effects inside setProgress (React
+  // StrictMode double-invokes updaters in dev and would lose them).
   useEffect(() => {
     if (phase !== "loading") return;
     const interval = setInterval(() => {
-      setProgress((prev) => {
-        const next = Math.min(prev + (Math.random() * 1.3 + 0.9), 100);
-        if (next >= 100) {
-          clearInterval(interval);
-          // Let the color "lock in", then reveal the site.
-          setTimeout(() => setPhase("settled"), 320);
-          setTimeout(() => setPhase("exiting"), 1000);
-        }
-        return next;
-      });
+      setProgress((prev) => Math.min(prev + (Math.random() * 1.3 + 0.9), 100));
     }, 75);
     return () => clearInterval(interval);
   }, [phase]);
+
+  // Once fully loaded, let the color "lock in", then trigger the exit iris.
+  // Driven off progress in its own effect so it's StrictMode-safe.
+  useEffect(() => {
+    if (phase !== "loading" || progress < 100) return;
+    const settle = setTimeout(() => setPhase("settled"), 320);
+    const exit = setTimeout(() => setPhase("exiting"), 1000);
+    return () => {
+      clearTimeout(settle);
+      clearTimeout(exit);
+    };
+  }, [progress, phase]);
 
   // Color fills the word left→right by load progress; cyan drops on settle.
   const revealClip = `inset(0 ${100 - progress}% 0 0)`;

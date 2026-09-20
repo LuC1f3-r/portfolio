@@ -124,34 +124,66 @@ body {
   outline-offset: 2px;
 }
 
-/* Hero ghost monogram glitch (reveals the "LuC1f3-r" handle) */
-.glitch-word {
+/* Hero role band — overlap crossfade-glitch: on each swap the outgoing and
+   incoming role render at the SAME grid cell, overlapping with an RGB split,
+   then it resolves onto the new word. */
+.role-swap {
   position: relative;
+  display: grid;
+  place-items: center;
   user-select: none;
 }
-.glitch-word__layer {
+.role-swap__layer {
   grid-area: 1 / 1;
+  text-align: center;
+  white-space: nowrap;
 }
-.glitch-word__base {
-  color: #131313;
+/* settled state: only the incoming (now current) word is visible */
+.role-swap__in { opacity: 1; }
+.role-swap__out { opacity: 0; }
+.role-swap__ghost { opacity: 0; }
+
+/* during a swap the two words overlap and the RGB ghosts flash */
+.role-swap.is-swapping .role-swap__in {
+  animation: role-in 0.44s steps(3, end) 1;
 }
-.glitch-word__ghost {
-  opacity: 0;
+.role-swap.is-swapping .role-swap__out {
+  animation: role-out 0.44s steps(3, end) 1;
 }
-.glitch-word.is-glitching .glitch-word__base {
-  color: #1a1a1a;
-  animation: glitch-slice 0.35s steps(2, end) 1;
-}
-.glitch-word.is-glitching .glitch-word__ghost--lime {
-  opacity: 0.55;
-  color: #c8ff00;
-  animation: glitch-shift-a 0.35s steps(2, end) 1;
-}
-.glitch-word.is-glitching .glitch-word__ghost--cyan {
-  opacity: 0.45;
+.role-swap.is-swapping .role-swap__ghost--cyan {
   color: #26f0f0;
-  animation: glitch-shift-b 0.35s steps(2, end) 1;
+  animation: role-ghost-cyan 0.44s steps(3, end) 1;
 }
+.role-swap.is-swapping .role-swap__ghost--lime {
+  color: #c8ff00;
+  animation: role-ghost-lime 0.44s steps(3, end) 1;
+}
+
+@keyframes role-out {
+  0%   { opacity: 1;   transform: translate(0, 0);    clip-path: inset(0 0 0 0); }
+  35%  { opacity: 0.8; transform: translate(-2.5%, 0); clip-path: inset(28% 0 22% 0); }
+  70%  { opacity: 0.35; transform: translate(2%, 0);   clip-path: inset(8% 0 58% 0); }
+  100% { opacity: 0;   transform: translate(0, 0);    clip-path: inset(0 0 0 0); }
+}
+@keyframes role-in {
+  0%   { opacity: 0;    transform: translate(0, 0);   clip-path: inset(0 0 0 0); }
+  35%  { opacity: 0.5;  transform: translate(2.5%, 0); clip-path: inset(52% 0 8% 0); }
+  70%  { opacity: 0.85; transform: translate(-1.5%, 0); clip-path: inset(0 0 44% 0); }
+  100% { opacity: 1;    transform: translate(0, 0);   clip-path: inset(0 0 0 0); }
+}
+@keyframes role-ghost-cyan {
+  0%   { opacity: 0;   transform: translate(0, 0); }
+  35%  { opacity: 0.5; transform: translate(-3.5%, 0); }
+  70%  { opacity: 0.3; transform: translate(3%, 0); }
+  100% { opacity: 0;   transform: translate(0, 0); }
+}
+@keyframes role-ghost-lime {
+  0%   { opacity: 0;    transform: translate(0, 0); }
+  35%  { opacity: 0.45; transform: translate(3.5%, 0); }
+  70%  { opacity: 0.3;  transform: translate(-3%, 0); }
+  100% { opacity: 0;    transform: translate(0, 0); }
+}
+
 @keyframes glitch-slice {
   0% { clip-path: inset(0 0 0 0); }
   25% { clip-path: inset(18% 0 52% 0); }
@@ -159,6 +191,7 @@ body {
   75% { clip-path: inset(8% 0 74% 0); }
   100% { clip-path: inset(0 0 0 0); }
 }
+/* used by the loader's RGB ghost layers */
 @keyframes glitch-shift-a {
   0% { transform: translate(0, 0); clip-path: inset(0 0 0 0); }
   25% { transform: translate(-1.2%, 0); clip-path: inset(22% 0 40% 0); }
@@ -212,8 +245,114 @@ body {
   animation: glitch-shift-b 0.6s steps(2, end) infinite;
 }
 
+/* About — INTERACTIVE day/night split. The white "day" panel is the left
+   region, its diagonal right edge driven by --day (0 = full night, 100 = full
+   day). It reveals to 50 on scroll, then the cursor drives --day so the visitor
+   slides between the two selves. @property makes --day smoothly transitionable. */
+@property --day {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 50;
+}
+.about-split {
+  position: relative;
+  --day: 0;
+  transition: --day 0.18s ease-out; /* fast follow while the cursor drives it */
+}
+/* During the glitchy tear the --day steps must land instantly (no easing) so
+   the judder reads; the GSAP timeline drives the values. */
+.about-split.tearing {
+  transition: none;
+}
+/* Desktop diagonal: left region with a "/" diagonal right edge at ~--day%. */
+@media (min-width: 768px) {
+  .diag-day,
+  .diag-seam {
+    clip-path: polygon(
+      0 0,
+      calc(var(--day) * 1% + 14%) 0,
+      calc(var(--day) * 1% - 14%) 100%,
+      0 100%
+    );
+    will-change: clip-path;
+  }
+  /* the lime seam pokes a few px past the white edge to draw the diagonal.
+     Static glow only — never animate box-shadow (it repaints every frame). */
+  .diag-seam {
+    transform: translateX(4px);
+    box-shadow: 0 0 22px rgba(200, 255, 0, 0.3);
+  }
+  /* the tear: cheap transform-only jitter (no box-shadow, no repaint) */
+  .about-split.tearing .diag-day {
+    animation: tear-shift 0.45s steps(3, end);
+  }
+  .about-split.tearing .diag-seam {
+    animation: tear-seam 0.45s steps(3, end);
+  }
+}
+@keyframes tear-shift {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-6px); }
+  45%  { transform: translateX(5px); }
+  70%  { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+@keyframes tear-seam {
+  0%   { transform: translateX(4px); }
+  20%  { transform: translateX(-2px); }
+  45%  { transform: translateX(10px); }
+  70%  { transform: translateX(1px); }
+  100% { transform: translateX(4px); }
+}
+
+/* Projects — RGB-split glitch on a project name when its row is hovered.
+   Reuses the loader's shift keyframes; ghosts sit over the base copy. */
+.glitch-hover {
+  position: relative;
+  display: inline-block;
+}
+.glitch-hover__ghost {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.project-row:hover .glitch-hover__ghost--cyan {
+  opacity: 0.75;
+  color: #26f0f0;
+  animation: glitch-shift-b 0.4s steps(2, end) infinite;
+}
+.project-row:hover .glitch-hover__ghost--lime {
+  opacity: 0.75;
+  color: #c8ff00;
+  animation: glitch-shift-a 0.35s steps(2, end) infinite;
+}
+
+/* Impact — one slow marquee band of the metric phrases (the page's single
+   marquee). Track holds the items twice so -50% loops seamlessly. */
+.marquee {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee__track {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee 32s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    animation: none;
+  }
   *,
   *::before,
   *::after {

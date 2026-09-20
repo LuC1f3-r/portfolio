@@ -90,8 +90,9 @@ export default function About() {
     }, section);
 
     return () => {
+      // ctx.revert() handles only this section's triggers — never
+      // getAll().kill(), which would nuke every other section on remount.
       ctx.revert();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
 

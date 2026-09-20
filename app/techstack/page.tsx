@@ -29,8 +29,7 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-type IconComponent = React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>;
-
+type IconComponent = React.ComponentType<{ size?: number; className?: string }>;
 type TechItem = { icon: IconComponent | null; name: string };
 
 const techCategories: { title: string; items: TechItem[] }[] = [
@@ -71,155 +70,65 @@ const techCategories: { title: string; items: TechItem[] }[] = [
   },
 ];
 
-function TechEntry({ item }: { item: TechItem }) {
-  const entryRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseEnter = () => {
-    const el = entryRef.current;
-    if (!el) return;
-    el.querySelectorAll<HTMLElement>(".tech-icon, .tech-label").forEach((node) => {
-      node.style.color = "#c8ff00";
-    });
-  };
-
-  const handleMouseLeave = () => {
-    const el = entryRef.current;
-    if (!el) return;
-    el.querySelectorAll<HTMLElement>(".tech-icon, .tech-label").forEach((node) => {
-      node.style.color = "#888";
-    });
-  };
-
-  return (
-    <div
-      ref={entryRef}
-      className="tech-entry flex items-center gap-2 cursor-default"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {item.icon !== null && (
-        <item.icon
-          size={13}
-          className="flex-shrink-0 transition-colors duration-200 tech-icon"
-          style={{ color: "#888" }}
-        />
-      )}
-      <span
-        className="tech-label text-sm leading-none transition-colors duration-200"
-        style={{
-          fontFamily: "var(--font-mono)",
-          color: "#888",
-        }}
-      >
-        {item.name}
-      </span>
-    </div>
-  );
-}
-
 export default function TechStack() {
   const sectionRef = useRef<HTMLElement>(null);
-  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      rowRefs.current.forEach((row) => {
-        if (row) {
-          const items = row.querySelectorAll<HTMLElement>(".tech-entry");
-          gsap.set(items, { y: 0, opacity: 1 });
-        }
-      });
-      return;
-    }
+    const section = sectionRef.current;
+    if (!section) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const ctx = gsap.context(() => {
-      rowRefs.current.forEach((row) => {
-        if (!row) return;
-        const items = row.querySelectorAll<HTMLElement>(".tech-entry");
-        gsap.fromTo(
-          items,
-          { y: 20, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.5,
-            stagger: 0.06,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: row,
-              start: "top 85%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
+      gsap.from(".tech-name", {
+        y: 24,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.03,
+        ease: "power3.out",
+        scrollTrigger: { trigger: section, start: "top 70%" },
       });
-    }, sectionRef);
+    }, section);
 
-    return () => {
-      ctx.revert();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
+    // The one DAY beat low on the page — light, airy, a palette cleanser
+    // between two dark sections.
     <section
       ref={sectionRef}
-      className="w-full py-24 px-6 md:px-12 lg:px-24"
+      className="w-full bg-[#f4f4f0] px-6 py-32 text-[#111] md:py-48"
     >
-      <div className="max-w-4xl mx-auto">
-        {/* Kicker */}
-        <p
-          className="text-xs tracking-[0.2em] uppercase mb-4"
-          style={{
-            fontFamily: "var(--font-mono)",
-            color: "var(--fg-muted)",
-          }}
-        >
-          {`// 06`}
-        </p>
-
-        {/* Title */}
-        <h2
-          className="text-5xl sm:text-6xl md:text-7xl font-black mb-16 leading-none"
-          style={{
-            fontFamily: "var(--font-display)",
-            color: "var(--fg)",
-          }}
-        >
+      <div className="mx-auto max-w-[1400px]">
+        <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.3em] text-[#888]">
           Stack
+        </p>
+        <h2 className="mt-5 max-w-[16ch] font-[family-name:var(--font-display)] text-5xl font-bold leading-[0.95] tracking-tight text-[#111] md:text-7xl">
+          Tools I build with.
         </h2>
 
-        {/* Categories */}
-        <div>
-          {techCategories.map((category, catIdx) => (
+        <div className="mt-20 space-y-14">
+          {techCategories.map((category) => (
             <div
-              key={catIdx}
-              ref={(el) => { rowRefs.current[catIdx] = el; }}
-              className="border-t py-10"
-              style={{ borderColor: "#1a1a1a" }}
+              key={category.title}
+              className="grid grid-cols-1 gap-4 border-t border-[#111]/10 pt-8 md:grid-cols-[10rem_1fr] md:gap-10"
             >
-              {/* Category label */}
-              <p
-                className="text-xs tracking-[0.15em] uppercase mb-8"
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  color: "var(--fg-muted)",
-                }}
-              >
+              <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.2em] text-[#999]">
                 {category.title}
               </p>
-
-              {/* Items */}
-              <div className="flex flex-wrap gap-x-8 gap-y-5">
-                {category.items.map((item, idx) => (
-                  <TechEntry key={idx} item={item} />
+              <div className="flex flex-wrap gap-x-6 gap-y-3">
+                {category.items.map((item) => (
+                  <span
+                    key={item.name}
+                    className="tech-name inline-flex items-center gap-2 px-1.5 py-0.5 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[#1a1a1a] transition-colors duration-200 hover:bg-[#c8ff00] hover:text-[#0a0a0a] md:text-4xl"
+                  >
+                    {item.icon && <item.icon size={22} className="opacity-70" />}
+                    {item.name}
+                  </span>
                 ))}
               </div>
             </div>
           ))}
-
-          {/* Bottom border */}
-          <div className="border-t" style={{ borderColor: "#1a1a1a" }} />
         </div>
       </div>
     </section>

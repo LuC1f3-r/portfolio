@@ -16,66 +16,65 @@ import Contact from "@/app/contacts/page";
 
 export default function Home() {
   const [showLoader, setShowLoader] = useState(true);
-  const [isReady, setIsReady] = useState(false);
+  // `play` fires the hero intro choreography the instant the loader hands off.
+  const [play, setPlay] = useState(false);
+  // Scroll stays locked through the loader AND the intro reveal, so the
+  // choreographed moment can't be scrolled through.
+  const [locked, setLocked] = useState(true);
 
   const handleLoaderComplete = () => {
     setShowLoader(false);
-    // Small delay before enabling content
-    setTimeout(() => setIsReady(true), 300);
+    setPlay(true);
+    // Release scroll once the intro sequence has played out.
+    window.setTimeout(() => setLocked(false), 1600);
   };
 
-  // Prevent scroll during loading
   useEffect(() => {
-    if (showLoader) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = locked ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showLoader]);
+  }, [locked]);
 
   return (
     <>
       {/* Cinematic Loader */}
       {showLoader && <StoryLoader onComplete={handleLoaderComplete} />}
 
-      {/* Main Content */}
+      {/* Main Content — always mounted so the hero can pre-stage its intro
+          behind the loader, then reveal the instant the curtain irises away. */}
       <SmoothScroll>
-        <div 
-          className={`relative w-full transition-opacity duration-700 ${
-            isReady ? "opacity-100" : "opacity-0"
-          }`}
-        >
+        <div className="relative w-full">
           {/* Navigation */}
           <Navbar />
 
           <main className="w-full">
             {/* Hero Section */}
             <section id="home" className="min-h-screen">
-              <Hero />
+              <Hero play={play} />
             </section>
 
-            {/* About Section */}
-            <SectionTransition id="about" transitionType="maskReveal">
+            {/* About pins + tears open via CSS sticky — render outside the
+                transform-based SectionTransition so sticky isn't broken. */}
+            <div id="about">
               <About />
-            </SectionTransition>
+            </div>
 
             {/* Impact Section */}
             <SectionTransition id="impact" transitionType="fade">
               <Impact />
             </SectionTransition>
 
-            {/* Experience Section */}
-            <SectionTransition id="experience" transitionType="slideUp">
+            {/* Experience + Projects use CSS sticky to pin. A transformed
+                ancestor (any SectionTransition type) breaks sticky, so these
+                render in plain id wrappers — they handle their own motion. */}
+            <div id="experience">
               <Experience />
-            </SectionTransition>
+            </div>
 
-            {/* Projects Section */}
-            <SectionTransition id="projects" transitionType="slideUp">
+            <div id="projects">
               <Projects />
-            </SectionTransition>
+            </div>
 
             {/* TechStack Section */}
             <SectionTransition id="techstack" transitionType="fade">
